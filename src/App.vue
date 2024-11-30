@@ -10,6 +10,9 @@ const fetchUsers = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
+    else {
+      console.log('Fetch Mock-API:OK!');
+    }
 
     const data = await response.json();
     users.value = data;                                                 
