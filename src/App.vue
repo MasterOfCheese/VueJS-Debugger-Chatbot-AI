@@ -1,41 +1,58 @@
-<script setup>
-import { onMounted, ref } from "vue"
-
-const users = ref([]);
-
-const fetchUsers = async () => {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users", {
-    })
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    else {
-      console.log('Fetch Mock-API:OK!');
-    }
-
-    const data = await response.json();
-    users.value = data;                                                 
-  } catch (error) {
-    console.error("Error when calling API:", error);
-  }
-}
-
-onMounted(() => {
-  fetchUsers();
-})
+<script setup lang="js">
+import ChatBox from "./components/ChatBox.vue";
+import ChatsContainer from "./components/ChatsContainer.vue";
+import LeftSideBar from "./components/LeftSideBar.vue";
 </script>
 
 <template>
-  <div>
-    <h1>Users List</h1>
-    <ul>
-      <li style="margin-bottom: 15px;" v-for="user in users" :key="user.id">
-        {{ user.id }}. ({{ user.name }})  <br> ({{ user.email }}) <br> ({{ user.phone }}) 
-      </li>
-    </ul>
+  <div class="wrapper">
+    <LeftSideBar class="side-bar"/>
+    <div class="app-container">
+      <ChatsContainer class="chats-container" />
+      <ChatBox />
+    </div>
   </div>
 </template>
 
 <style scoped>
+.wrapper {
+  display: flex;
+  justify-content: center;
+  font-family: 'Roboto', sans-serif;
+  height: 95vh;
+  overflow: hidden;
+}
+.app-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 80%;
+  margin: 0 auto;
+  padding-bottom: 0;
+}
+
+.chats-container {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+  position: absolute;
+  max-width: max-content;
+  min-width: 45%;
+  /* background: aqua; */
+  top: 17%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.side-bar {
+    width: 20%;
+    background-color: #F9F9F9;
+    margin: -8px 0 0 -8px;
+    overflow: hidden;
+    height: 100%;
+    overflow-y: scroll;
+}
+.side-bar::-webkit-scrollbar-thumb {
+  background-color: black;
+}
 </style>

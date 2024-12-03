@@ -1,4 +1,6 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  transpileDependencies: true
-})
+module.exports = {
+  transpileDependencies: [
+    'dependency-name', // Replace with actual dependencies if needed
+  ],
+  lintOnSave: false, // Add this to temporarily disable linting
+};
