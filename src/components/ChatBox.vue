@@ -1,38 +1,40 @@
 <template>
-    <div class="chat-box">
-      <div class="input-container">
-        <input
-          v-model="message"
-          type="text"
-          class="message-input"
-          placeholder="Message FoxconnGPT :))"
-        />
-        <div class="buttons-container">
-          <button class="send-button" @click="sendChats"></button>
-        </div>
+  <div class="chat-box">
+    <div class="input-container">
+      <input
+        v-model="message"
+        type="text"
+        class="message-input"
+        placeholder="Message FoxconnGPT :))"
+      />
+      <div class="buttons-container">
+        <button class="send-button"
+        :disabled="!message"
+        :style="{backgroundColor: message ? '#007bff' : 'unset',
+         cursor: message ? 'pointer' : 'unset'}"
+        :title="!message ? 'Message is empty!' : ''"
+        @click="sendChats"></button>
       </div>
     </div>
-  </template>
-  
-  <script setup lang="js">
-  import { ref } from "vue";
-  // import { sendAllMessages } from "@/service";
-  // import { CHATS } from "@/stores/chat";
-  
-  const message = ref("");
+  </div>
+</template>
 
-  
-  // async function sendChats() {
-  //   const userMessage = {
-  //     role: "user",
-  //     content: message.value,
-  //   };
-  //   CHATS.value.push(userMessage);
-  
-  //   let chatGPTMessage = await sendAllMessages(CHATS.value);
-  //   CHATS.value.push(chatGPTMessage);
-  // }
-  </script>
+<script setup lang="js">
+import { ref } from "vue"
+// import { useMessageStore } from '@/stores/messageStore'
+
+const message = ref("");
+const messageSent = ref(false);
+function sendChats() {
+  if (message.value) {
+  console.log("Message sent:", message.value)
+  messageSent.value = true
+  message.value = ''
+  }
+}
+
+</script>
+
   
   <style lang="scss" scoped>
   @keyframes toRightFromLeft {
@@ -52,10 +54,15 @@
     gap: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     position: absolute;
-    width: 45%;
+    width: 15%;
     bottom: 12%;
     left: 50%;
+    transition: all 0.35s ease-in-out;
     transform: translateX(-50%);
+    &:focus-within, &:hover, &:active {
+      width: 45%;
+      transition: all 0.35s ease-in-out;
+    }
   }
   
   .input-container {
@@ -107,6 +114,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+      &:disabled::after {
+        color: #D2D2D2;
+        background-color: transparent;
+      }
+      &:disabled:hover::after, &:disabled:active::after, &:disabled:focus::after {
+        animation: none;
       }
   }
   </style>

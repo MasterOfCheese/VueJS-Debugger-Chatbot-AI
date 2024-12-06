@@ -2,13 +2,18 @@
 import ChatBox from "./components/ChatBox.vue";
 import ChatsContainer from "./components/ChatsContainer.vue";
 import LeftSideBar from "./components/LeftSideBar.vue";
+import { ref } from "vue"
+
+const message = ref("");
+const messageSent = ref(false);
+
 </script>
 
 <template>
   <div class="wrapper">
     <LeftSideBar class="side-bar"/>
     <div class="app-container">
-      <ChatsContainer class="chats-container" />
+      <ChatsContainer :messageSent="messageSent" :lastMessage="message"  class="chats-container" />
       <ChatBox />
     </div>
   </div>
