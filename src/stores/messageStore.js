@@ -1,13 +1,19 @@
-import { defineStore } from 'pinia';
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
-export const useMessageStore = defineStore('message', {
-  state: () => ({
-    message: '', // Lưu trữ giá trị của message
-  }),
+export const useMessageStore = defineStore('message', () => {
+  const message = ref('')
+  const messageSent = ref(false)
+  const response = ref('');
 
-  actions: {
-    setMessage(newMessage) {
-      this.message = newMessage; // Thay đổi giá trị message trong store
-    },
-  },
-});
+  function setMessage(newMessage) {
+    message.value = newMessage
+    messageSent.value = true
+    getResponse(newMessage)
+  }
+
+  function getResponse(message) {
+    response.value = `You said: ${message} :)))`;
+  }
+  return { message, messageSent, setMessage, response }
+})

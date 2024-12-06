@@ -1,15 +1,10 @@
 <template>
   <div>
-    <div class="nameBot">
-    <span
-      v-for="(char, index) in textArray"
-      :key="index"
-      :class="{ visible: visibleChars.includes(index) }"
-    >
-      <!-- Nếu ký tự là khoảng trắng, hiển thị &nbsp; -->
-      {{ char === " " ? "\u00A0" : char }}
-    </span>
-  </div>
+    <div class="nameBot" v-if="!messageSent">
+      <span v-for="(char, index) in textArray" :key="index" :class="{ visible: visibleChars.includes(index) }">
+        {{ char === " " ? "\u00A0" : char }}
+      </span>
+    </div>
     <div class="suggest" v-if="!messageSent">
       <div class="suggest-area"><p id="suggest1">Regarding Technology Features</p></div>
       <div class="suggest-area"><p id="suggest2">Regarding Technology Features</p></div>
@@ -17,23 +12,27 @@
       <div class="suggest-area"><p id="suggest4">Regarding Technology Features</p></div>
     </div>
 
-    <!-- message box here -->
     <div class="chat-box" v-if="messageSent">
       <div class="chat-message">
-        {{ lastMessage }}
+        <p>{{ message }}</p>
       </div>
     </div>
+
+    <ChatResponse />
   </div>
 </template>
 
 <script setup lang="js">
-import { ref, onMounted  } from "vue"
+import { ref, onMounted, computed } from "vue"
+import { useMessageStore } from '@/stores/messageStore'
+import ChatResponse from "./ChatResponse.vue"
 
-const lastMessage = ref("")
-const messageSent = ref(false)
+const messageStore = useMessageStore()
+const messageSent = computed(() => messageStore.messageSent)
+const message = computed(() => messageStore.message)
 
-const text = "Foxconn ChatBot"
-const textArray = ref(text.split(""))
+const text = 'Foxconn ChatBot'
+const textArray = ref(text.split(''))
 const visibleChars = ref([])
 
 const showCharacters = () => {
@@ -73,7 +72,7 @@ p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
 .suggest {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    column-gap: 1%;
+    column-gap: 5%;
 }
 .suggest-area {
     display: flex;
@@ -101,7 +100,7 @@ p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
   opacity: 1;
   transform: translateX(0);
 }
-.nameBot::after {
+/* .nameBot::after {
   content: '';
   position: absolute;
   width: 0%;
@@ -113,6 +112,18 @@ p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
 .nameBot:hover::after {
   width: 97%;
   transition: all 0.3s ease-in-out;
-}
+} */
+  .chat-box {
+      width: 100%;
+      display: flex;
+      justify-content: right;
+      /* margin-top: -4em; */
+  }
+  .chat-message p {
+      width: max-content;
+      background-color: #DDD;
+      padding: 0.8em 1.3em;
+      border-radius: 25px;
+  }
   </style>
   

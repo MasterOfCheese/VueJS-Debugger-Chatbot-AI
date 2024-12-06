@@ -1,19 +1,17 @@
 <script setup lang="js">
+import { useMessageStore } from '@/stores/messageStore';
 import ChatBox from "./components/ChatBox.vue";
 import ChatsContainer from "./components/ChatsContainer.vue";
 import LeftSideBar from "./components/LeftSideBar.vue";
-import { ref } from "vue"
 
-const message = ref("");
-const messageSent = ref(false);
-
+const messageStore = useMessageStore()
 </script>
 
 <template>
   <div class="wrapper">
     <LeftSideBar class="side-bar"/>
     <div class="app-container">
-      <ChatsContainer :messageSent="messageSent" :lastMessage="message"  class="chats-container" />
+      <ChatsContainer :messageSent="messageStore.messageSent" :lastMessage="messageStore.message" class="chats-container" />
       <ChatBox />
     </div>
   </div>
@@ -47,6 +45,10 @@ const messageSent = ref(false);
   top: 17%;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .side-bar {

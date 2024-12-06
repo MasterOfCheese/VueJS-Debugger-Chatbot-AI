@@ -1,4 +1,9 @@
 <template>
+  <div class="mess-me" v-if="!messageStore.messageSent">
+    <span v-for="(char, index) in messageArray" :key="index" :class="{ visible: visibleMessageChars.includes(index) }">
+        {{ char === " " ? "\u00A0" : char }}
+    </span>
+  </div>
   <div class="chat-box">
     <div class="input-container">
       <input
@@ -20,19 +25,37 @@
 </template>
 
 <script setup lang="js">
-import { ref } from "vue"
-// import { useMessageStore } from '@/stores/messageStore'
+import { ref, onMounted } from "vue"
+import { useMessageStore } from '@/stores/messageStore'
 
-const message = ref("");
-const messageSent = ref(false);
+const message = ref("")
+const messageStore = useMessageStore()
+
 function sendChats() {
   if (message.value) {
   console.log("Message sent:", message.value)
-  messageSent.value = true
+  messageStore.setMessage(message.value)
   message.value = ''
   }
 }
 
+const messageText = 'What can I help with?'
+const messageArray = ref(messageText.split(''))
+const visibleMessageChars = ref([])
+
+const showMessageCharacters = () => {
+  setTimeout(() => {
+    messageArray.value.forEach((_, index) => {
+      setTimeout(() => {
+        visibleMessageChars.value.push(index)
+      }, index * 50)
+    })
+  }, 1800)
+}
+
+onMounted(() => {
+  showMessageCharacters()
+})
 </script>
 
   
@@ -123,5 +146,27 @@ function sendChats() {
         animation: none;
       }
   }
+  .mess-me {
+    position: absolute;
+    width: max-content;
+    bottom: 23%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 26px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mess-me span {
+  opacity: 0;
+  transition: opacity 0.3s linear, transform 0.35s;
+  transform: translateX(-80px);
+}
+
+.mess-me span.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
   </style>
   
