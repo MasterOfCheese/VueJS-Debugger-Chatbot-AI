@@ -72,7 +72,9 @@ p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
 .suggest {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    column-gap: 5%;
+    /* column-gap: 5%; */
+    width: max-content;
+    gap: 20px;
 }
 .suggest-area {
     display: flex;
