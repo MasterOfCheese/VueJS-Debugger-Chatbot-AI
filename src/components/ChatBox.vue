@@ -1,28 +1,40 @@
 <template>
-  <div class="mess-me" v-if="!messageStore.messageSent">
-    <span v-for="(char, index) in messageArray" :key="index" :class="{ visible: visibleMessageChars.includes(index) }">
+  <div class="chat-container">
+    <div class="mess-me" v-if="!messageStore.messageSent">
+      <span
+        v-for="(char, index) in messageArray"
+        :key="index"
+        :class="{ visible: visibleMessageChars.includes(index) }"
+      >
         {{ char === " " ? "\u00A0" : char }}
-    </span>
-  </div>
-  <div class="chat-box">
-    <div class="input-container">
-      <input
-        v-model="message"
-        type="text"
-        class="message-input"
-        placeholder="Message FoxconnGPT :))"
-      />
-      <div class="buttons-container">
-        <button class="send-button"
-        :disabled="!message"
-        :style="{backgroundColor: message ? '#007bff' : 'unset',
-         cursor: message ? 'pointer' : 'unset'}"
-        :title="!message ? 'Message is empty!' : ''"
-        @click="sendChats"></button>
+      </span>
+    </div>
+
+    <div class="chat-box">
+      <div class="input-container">
+        <input
+          v-model="message"
+          type="text"
+          class="message-input"
+          placeholder="Message FoxconnGPT :))"
+        />
+        <div class="buttons-container">
+          <button
+            class="send-button"
+            :disabled="!message"
+            :style="{
+              backgroundColor: message ? '#007bff' : 'unset',
+              cursor: message ? 'pointer' : 'unset',
+            }"
+            :title="!message ? 'Message is empty!' : ''"
+            @click="sendChats"
+          ></button>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="js">
 import { ref, onMounted } from "vue"
@@ -77,7 +89,7 @@ onMounted(() => {
     gap: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     position: absolute;
-    width: 15%;
+    width: 16%;
     bottom: 12%;
     left: 50%;
     transition: all 0.35s ease-in-out;
@@ -152,7 +164,7 @@ onMounted(() => {
     bottom: 23%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 26px;
+    font-size: 20px;
     font-weight: 500;
     display: flex;
     align-items: center;
