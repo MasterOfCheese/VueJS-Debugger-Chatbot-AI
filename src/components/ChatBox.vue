@@ -10,7 +10,7 @@
       </span>
     </div>
 
-    <div class="chat-box">
+    <div class="chat-box" :style="{bottom: chatBoxBottom }">
       <div class="input-container">
         <input
           v-model="message"
@@ -39,6 +39,7 @@
 <script setup lang="js">
 import { ref, onMounted } from "vue"
 import { useMessageStore } from '@/stores/messageStore'
+const chatBoxBottom = ref('12%')
 
 const message = ref("")
 const messageStore = useMessageStore()
@@ -48,6 +49,7 @@ function sendChats() {
   console.log("Message sent:", message.value)
   messageStore.setMessage(message.value)
   message.value = ''
+  chatBoxBottom.value = '5%'
   }
 }
 
@@ -68,6 +70,7 @@ const showMessageCharacters = () => {
 onMounted(() => {
   showMessageCharacters()
 })
+
 </script>
 
   
@@ -91,7 +94,7 @@ onMounted(() => {
     position: absolute;
     width: 16%;
     bottom: 12%;
-    left: 50%;
+    left: 55%;
     transition: all 0.35s ease-in-out;
     transform: translateX(-50%);
     &:focus-within, &:hover, &:active {
@@ -162,7 +165,7 @@ onMounted(() => {
     position: absolute;
     width: max-content;
     bottom: 23%;
-    left: 50%;
+    left: 55%;
     transform: translateX(-50%);
     font-size: 20px;
     font-weight: 500;

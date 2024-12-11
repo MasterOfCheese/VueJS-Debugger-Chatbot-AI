@@ -79,15 +79,15 @@ const performSearch = () => {
   padding: 8px;
   overflow-y: auto;
   position: absolute;
-  max-width: max-content;
+  max-width: 710px;
   min-width: 45%;
   /* background: aqua; */
-  top: 17%;
-  left: 50%;
+  top: 5%;
+  left: 55%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
 }
 
