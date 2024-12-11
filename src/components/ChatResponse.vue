@@ -14,7 +14,7 @@
   
   <style scoped>
   .chat-response {
-    width: max-content;
+    width: 100%;
   }
   .chat-response span {
     margin-top: 20px;
@@ -22,7 +22,7 @@
     /* border: 1px solid #ccc; */
     border-radius: 25px;
     background-color: #DDD;
-    width: max-content;
+    /* width: max-content; */
     display: inline-flex;
   }
   </style>

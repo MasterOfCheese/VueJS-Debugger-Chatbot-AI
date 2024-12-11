@@ -121,8 +121,13 @@ p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
       justify-content: right;
       /* margin-top: -4em; */
   }
+  .chat-box .chat-message {
+    width: 80%;
+    display: flex;
+    justify-content: right;
+}
   .chat-message p {
-      width: max-content;
+      width: fit-content;
       background-color: #DDD;
       padding: 0.8em 1.3em;
       border-radius: 25px;
