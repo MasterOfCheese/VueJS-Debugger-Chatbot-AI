@@ -1,6 +1,6 @@
 <template>
   <div class="chat-container">
-    <div class="mess-me" v-if="!messageStore.messageSent">
+    <div class="mess-me" v-if="!messageStore.messageSent" :class="sidebarClass">
       <span
         v-for="(char, index) in messageArray"
         :key="index"
@@ -37,8 +37,10 @@
 
 
 <script setup lang="js">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import { useMessageStore } from '@/stores/messageStore'
+import { useThemeStore } from "@/stores/useThemeStore"
+
 const chatBoxBottom = ref('12%')
 
 const message = ref("")
@@ -71,10 +73,11 @@ onMounted(() => {
   showMessageCharacters()
 })
 
+// lấy trạng thái `isDarkMode` từ store
+const themeStore = useThemeStore()
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 </script>
-
-  
-  <style lang="scss" scoped>
+<style lang="scss" scoped>
   @keyframes toRightFromLeft {
     49% {
     transform: translateX(100%);
@@ -182,6 +185,9 @@ onMounted(() => {
 .mess-me span.visible {
   opacity: 1;
   transform: translateX(0);
+}
+.dark-sidebar {
+  color: #fff;
 }
   </style>
   

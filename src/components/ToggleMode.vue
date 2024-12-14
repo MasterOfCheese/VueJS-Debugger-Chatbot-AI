@@ -35,6 +35,7 @@ button#toggle-select-mode {
     width: 75px;
     height: 30px;
     border-radius: 30px;
+    box-shadow: 3.7px 7.4px 7.4px hsl(0deg 0% 0% / 0.39);
     i {
         display: flex;
         font-size: 20px;
