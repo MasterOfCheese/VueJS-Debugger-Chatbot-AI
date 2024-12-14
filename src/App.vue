@@ -3,8 +3,31 @@ import { useMessageStore } from '@/stores/messageStore';
 import ChatBox from "./components/ChatBox.vue";
 import ChatsContainer from "./components/ChatsContainer.vue";
 import LeftSideBar from "./components/LeftSideBar.vue";
-import { ref } from 'vue'
-import ToggleMode from './components/ToggleMode.vue';
+import { ref, watch, onMounted, computed } from 'vue'
+import ToggleMode from './components/ToggleMode.vue'
+import { useTheme } from 'vuetify/lib/framework'
+import { useThemeStore } from './stores/useThemeStore'
+import { toggleUseThemeStore } from './stores/toggleUseThemeStore'
+
+const theme = useTheme()
+const themeStore = useThemeStore()
+const toggleThemeStore = toggleUseThemeStore()
+
+// theo dõi sự thay đổi từ Vuetify + cập nhật vào Pinia
+watch(
+  () => theme.global.current.value.dark,
+  (isDark) => {
+    themeStore.setDarkMode(isDark)
+    toggleThemeStore.setDarkMode(isDark)
+  }
+)
+// đồng bộ trạng thái ban đầu
+onMounted(() => {
+ themeStore.syncWithVuetify(theme)
+ toggleThemeStore.syncWithVuetify(theme)
+})
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
+const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-sidebar' : 'toggle-light-sidebar'))
 
 const messageStore = useMessageStore()
 
@@ -20,7 +43,7 @@ const performSearch = () => {
 
 <template>
   <div class="wrapper">
-    <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" />
+    <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
     <div class="app-container">
       <ChatsContainer :messageSent="messageStore.messageSent" :lastMessage="messageStore.message" class="chats-container" />
       <ChatBox />
@@ -53,7 +76,7 @@ const performSearch = () => {
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <toggle-mode />
+    <toggle-mode :class="toggleSidebarClass" />
   </div>
 </template>
 
@@ -65,6 +88,7 @@ const performSearch = () => {
   height: 100vh;
   overflow: hidden;
 }
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -92,11 +116,19 @@ const performSearch = () => {
 }
 
 .side-bar {
-    width: 20%;
+    width: 260px;
     background-color: #F9F9F9;
     margin: -8px 0 0 -8px;
     overflow: hidden;
     height: 101%;
     overflow-y: scroll;
 }
+.dark-sidebar {
+    background-color: #011E4D;
+}
+.toggle-dark-sidebar {
+  background-color: rgb(59, 87, 87);
+  box-shadow: 3.7px 7.4px 7.4px hsla(0, 8%, 91%, 0.39)!important;
+  color: #778eb4;
+  }
 </style>

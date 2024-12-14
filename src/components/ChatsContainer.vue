@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="nameBot" v-if="!messageSent">
+    <div class="nameBot" v-if="!messageSent" :class="sidebarClass">
       <span v-for="(char, index) in textArray" :key="index" :class="{ visible: visibleChars.includes(index) }">
         {{ char === " " ? "\u00A0" : char }}
       </span>
@@ -26,6 +26,7 @@
 import { ref, onMounted, computed } from "vue"
 import { useMessageStore } from '@/stores/messageStore'
 import ChatResponse from "./ChatResponse.vue"
+import { useThemeStore } from "@/stores/useThemeStore"
 
 const messageStore = useMessageStore()
 const messageSent = computed(() => messageStore.messageSent)
@@ -46,6 +47,10 @@ const showCharacters = () => {
 onMounted(() => {
   showCharacters()
 })
+
+// lấy trạng thái `isDarkMode` từ store
+const themeStore = useThemeStore()
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 </script>
   
   <style scoped>
@@ -132,5 +137,8 @@ p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
       padding: 0.8em 1.3em;
       border-radius: 25px;
   }
+  .dark-sidebar {
+  color: #fff;
+}
   </style>
   
