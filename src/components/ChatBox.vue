@@ -17,6 +17,7 @@
           type="text"
           class="message-input"
           placeholder="Message FoxconnGPT :))"
+          @keydown.enter="sendChats"
         />
         <div class="buttons-container">
           <button
