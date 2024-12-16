@@ -8,23 +8,42 @@ import ToggleMode from './components/ToggleMode.vue'
 import { useTheme } from 'vuetify/lib/framework'
 import { useThemeStore } from './stores/useThemeStore'
 import { toggleUseThemeStore } from './stores/toggleUseThemeStore'
+import LoginPage from './components/LoginPage.vue'
+import { useRouter } from 'vue-router';
+
+const isAuthenticated = ref(!!localStorage.getItem('token'));
+const router = useRouter();
 
 const theme = useTheme()
 const themeStore = useThemeStore()
 const toggleThemeStore = toggleUseThemeStore()
 
+// const isAuthenticated = ref(false)
+
 // theo dõi sự thay đổi từ Vuetify + cập nhật vào Pinia
 watch(
   () => theme.global.current.value.dark,
   (isDark) => {
-    themeStore.setDarkMode(isDark)
-    toggleThemeStore.setDarkMode(isDark)
+    themeStore.setDarkMode(isDark);
+    toggleThemeStore.setDarkMode(isDark);
   }
 )
+// Logic xử lý trạng thái đăng nhập
+const onLoginSuccess  = (token) => {
+  localStorage.setItem('token', token); // Lưu token
+  isAuthenticated.value = true; // Cập nhật trạng thái
+  alert('Login successful!');
+  router.push('/'); // Điều hướng ngay sau khi lưu token
+};
+
 // đồng bộ trạng thái ban đầu
 onMounted(() => {
  themeStore.syncWithVuetify(theme)
  toggleThemeStore.syncWithVuetify(theme)
+  // Kiểm tra nếu đã có token trong localStorage thì cập nhật trạng thái
+  if (localStorage.getItem('token')) {
+    isAuthenticated.value = true;
+  }
 })
 const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-sidebar' : 'toggle-light-sidebar'))
@@ -42,7 +61,9 @@ const performSearch = () => {
 </script>
 
 <template>
-  <div class="wrapper">
+  <div>
+    <LoginPage v-if="!isAuthenticated" @login-success="onLoginSuccess" />
+    <div v-else class="wrapper">
     <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
     <div class="app-container">
       <ChatsContainer :messageSent="messageStore.messageSent" :lastMessage="messageStore.message" class="chats-container" />
@@ -77,6 +98,7 @@ const performSearch = () => {
       </v-card>
     </v-dialog>
     <toggle-mode :class="toggleSidebarClass" />
+    </div>
   </div>
 </template>
 
