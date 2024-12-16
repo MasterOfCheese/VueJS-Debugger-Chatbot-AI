@@ -1,14 +1,18 @@
 module.exports = {
   transpileDependencies: [
-    'dependency-name', // Replace with actual dependencies if needed
+    'dependency-name', // Thay thế bằng tên dependencies nếu cần
   ],
 
-  // Add this to temporarily disable linting
+  // Tạm thời vô hiệu hóa linting
   lintOnSave: false,
 
   pluginOptions: {
     vuetify: {
-			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
-		}
+      // Thêm thông tin nếu bạn đang dùng Vuetify
+    }
+  },
+
+  devServer: {
+    port: 9090,
   }
 };
