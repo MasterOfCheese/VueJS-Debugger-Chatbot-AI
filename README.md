@@ -13,8 +13,8 @@ npm run serve
 The basic interface:
 ![Layout1](./src/assets/Layout0.png)
 The chat interface:
-![Layout1](./src/assets/Layout1.png)
+![Layout2](./src/assets/Layout1.png)
 The Search bar interface:
-![Layout1](./src/assets/Layout2.png)
+![Layout3](./src/assets/layout2.png)
 The basic interface with darkmode:
-![Layout1](./src/assets/Layout3.png)
+![Layout4](./src/assets/Layout3.png)
