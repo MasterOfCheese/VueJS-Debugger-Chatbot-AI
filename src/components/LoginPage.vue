@@ -22,17 +22,48 @@
 <script setup lang="js">
 import { defineEmits, ref } from 'vue';
 
-const emit = defineEmits(['login-success']); // Khai báo sự kiện
+const emit = defineEmits(['login-success']); 
 
 const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
 
-const handleLogin = () => {
+
+const handleLogin = async () => {
   if (username.value && password.value) {
-    const token = 'example-token'; // Token giả định
-    localStorage.setItem('token', token); // Lưu token vào localStorage
-    emit('login-success', token); // Phát sự kiện lên App.vue
+    // Dữ liệu form-encoded
+    const formData = new URLSearchParams();
+    formData.append('username', username.value);
+    formData.append('password', password.value);
+
+    try {
+      // Gửi request đến BE
+      const response = await fetch('http://172.20.10.4:5000/auth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData,
+      });
+
+      // Xử lý response
+      if (!response.ok) {
+        throw new Error('Invalid username or password');
+      }
+
+      const data = await response.json();
+      const token = data.access_token;
+
+      // Lưu token vào localStorage và emit sự kiện
+      localStorage.setItem('token', token);
+      emit('login-success', token);
+
+      errorMessage.value = ''; // Xóa thông báo lỗi nếu thành công
+      console.log('Token:', token);
+    } catch (error) {
+      console.error('Login error:', error);
+      errorMessage.value = 'Invalid username or password';
+    }
   } else {
     errorMessage.value = 'Please enter both username and password.';
   }
