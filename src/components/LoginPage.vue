@@ -38,7 +38,7 @@ const handleLogin = async () => {
 
     try {
       // Gửi request đến BE
-      const response = await fetch('http://172.20.10.4:5000/auth/token', {
+      const response = await fetch('http://192.168.220.25:5000/auth/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -48,7 +48,7 @@ const handleLogin = async () => {
 
       // Xử lý response
       if (!response.ok) {
-        throw new Error('Invalid username or password');
+        throw new Error('Something went wrong!');
       }
 
       const data = await response.json();
@@ -69,3 +69,60 @@ const handleLogin = async () => {
   }
 };
 </script>
+<style scoped>
+.login-container {
+  max-width: 430px;
+  margin: 13% auto;
+  padding: 40px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+  scale: 1.4;
+  border: 2px solid pink;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.v-text-field {
+  margin-bottom: 15px;
+}
+
+.v-text-field input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  transition: border-color 0.3s;
+}
+
+.v-text-field input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.v-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(145deg, #8447b6, #87adf1);
+
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.v-btn:hover {
+  background: linear-gradient(145deg, #6b3696, #698ed4);
+}
+.error {
+  color: #e74c3c;
+  margin-top: 10px;
+  text-align: center;
+}
+</style>

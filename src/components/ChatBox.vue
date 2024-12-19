@@ -1,6 +1,7 @@
 <template>
   <div class="chat-container">
-    <div class="mess-me" v-if="!messageStore.messageSent" :class="sidebarClass">
+    <!-- Thay đổi logic v-if để hiển thị khi chưa gửi tin nhắn -->
+    <div class="mess-me" :class="sidebarClass">
       <span
         v-for="(char, index) in messageArray"
         :key="index"
@@ -10,7 +11,8 @@
       </span>
     </div>
 
-    <div class="chat-box" :style="{bottom: chatBoxBottom }">
+    <!-- Ô nhập tin nhắn và nút gửi -->
+    <div class="chat-box" :style="{ bottom: chatBoxBottom }">
       <div class="input-container">
         <input
           v-model="message"
@@ -36,59 +38,84 @@
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted } from 'vue'
+import { defineEmits } from 'vue'
 
-<script setup lang="js">
-import { ref, onMounted, computed } from "vue"
-import { useMessageStore } from '@/stores/messageStore'
-import { useThemeStore } from "@/stores/useThemeStore"
+const emit = defineEmits(['sendMessage'])
+// state cục bộ thay thế messageStore
+const message = ref('')
+// const messageSent = ref(false)
 
-const chatBoxBottom = ref('12%')
-
-const message = ref("")
-const messageStore = useMessageStore()
-
-function sendChats() {
-  if (message.value) {
-  console.log("Message sent:", message.value)
-  messageStore.setMessage(message.value)
-  message.value = ''
-  chatBoxBottom.value = '5%'
-  }
-}
-
-const messageText = 'What can I help with?'
-const messageArray = ref(messageText.split(''))
+const messageArray = 'What can I help with?'.split('')
 const visibleMessageChars = ref([])
+const sidebarClass = ref('default-sidebar-class')
+const chatBoxBottom = ref('')
 
-const showMessageCharacters = () => {
-  setTimeout(() => {
-    messageArray.value.forEach((_, index) => {
-      setTimeout(() => {
-        visibleMessageChars.value.push(index)
-      }, index * 50)
-    })
-  }, 1800)
-}
+// Gửi tin nhắn
+const sendChats = async () => {
+  emit('sendMessage', message.value);
+  chatBoxBottom.value = '50px';
+
+  if (!message.value) return;
+
+  const payload = {
+    messages: [
+      {
+        role: 'user',
+        content: message.value,
+      },
+    ],
+  };
+
+  console.log('Payload: ', payload);
+
+  try {
+    const res = await fetch('http://192.168.220.25:5000/chats/1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlkIjoxLCJ1c2VyX3JvbGUiOiJ1c2VyIiwiZXhwIjoxNzk0NDA1Mzc5fQ.6FOoOjOeztGoQUOb-5GWQP_h8Tiv7KjvrtOJMGf3hwY',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      console.error('Server response: ', res);
+      throw new Error('Network error');
+    }
+
+    message.value = '';
+    console.log('Tin nhắn đã gửi thành công');
+  } catch (error) {
+    console.error('Error sending message: ', error);
+  }
+};
+
+const animateMessage = () => {
+  messageArray.forEach((_, index) => {
+    setTimeout(() => {
+      visibleMessageChars.value.push(index);
+    }, index * 70);
+  });
+};
 
 onMounted(() => {
-  showMessageCharacters()
-})
-
-// lấy trạng thái `isDarkMode` từ store
-const themeStore = useThemeStore()
-const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
+  animateMessage();
+});
 </script>
 <style lang="scss" scoped>
   @keyframes toRightFromLeft {
     49% {
-    transform: translateX(100%);
+      transform: translateX(100%);
     }
     50% {
-    opacitX: 0;
-    transform: translateX(-100%);
+      opacity: 0;
+      transform: translateX(-100%);
     }
     51% {
-    opacity: 1;
+      opacity: 1;
     }
   }
   .chat-box {
@@ -97,7 +124,7 @@ const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'l
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     position: absolute;
     width: 16%;
-    bottom: 12%;
+    bottom: 18%;
     left: 55%;
     transition: all 0.35s ease-in-out;
     transform: translateX(-50%);
@@ -168,7 +195,7 @@ const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'l
   .mess-me {
     position: absolute;
     width: max-content;
-    bottom: 23%;
+    bottom: 30%;
     left: 55%;
     transform: translateX(-50%);
     font-size: 20px;
@@ -176,17 +203,20 @@ const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'l
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #333;
 }
 .mess-me span {
   opacity: 0;
-  transition: opacity 0.3s linear, transform 0.35s;
   transform: translateX(-80px);
+  transition: opacity 0.2s ease-in, transform 0.1s ease-in;
 }
 
 .mess-me span.visible {
   opacity: 1;
   transform: translateX(0);
+  transition-delay: 1.3s;
 }
+
 .dark-sidebar {
   color: #fff;
 }

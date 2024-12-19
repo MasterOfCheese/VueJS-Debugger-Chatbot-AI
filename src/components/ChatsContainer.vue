@@ -23,19 +23,23 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted, computed } from "vue"
-import { useMessageStore } from '@/stores/messageStore'
+import { ref, onMounted } from "vue"
 import ChatResponse from "./ChatResponse.vue"
-import { useThemeStore } from "@/stores/useThemeStore"
 
-const messageStore = useMessageStore()
-const messageSent = computed(() => messageStore.messageSent)
-const message = computed(() => messageStore.message)
+// Biến trạng thái sidebar
+const isDarkMode = ref(false)
+const sidebarClass = ref(isDarkMode.value ? "dark-sidebar" : "light-sidebar")
 
+// Biến cục bộ thay thế Pinia store
+const messageSent = ref(false)
+const message = ref('')
+
+// Text animation logic
 const text = 'Foxconn ChatBot'
 const textArray = ref(text.split(''))
 const visibleChars = ref([])
 
+// Hiển thị từng ký tự với hiệu ứng
 const showCharacters = () => {
   textArray.value.forEach((_, index) => {
     setTimeout(() => {
@@ -47,11 +51,8 @@ const showCharacters = () => {
 onMounted(() => {
   showCharacters()
 })
-
-// lấy trạng thái `isDarkMode` từ store
-const themeStore = useThemeStore()
-const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 </script>
+
   
   <style scoped>
   .chats-container {
