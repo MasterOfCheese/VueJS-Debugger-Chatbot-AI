@@ -31,7 +31,7 @@
 button#toggle-select-mode {
     position: relative;
     top: 20px;
-    right: 25px;
+    right: 20px;
     width: 75px;
     height: 30px;
     border-radius: 30px;

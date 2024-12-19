@@ -38,7 +38,7 @@
 
         <div class="divider"></div>
 
-        <div title="Log Out" class="options" :class="sidebarClass">
+        <!-- <div title="Log Out" class="options" :class="sidebarClass">
             <div class="logout">
                 <span>
                     <v-btn variant="elevated" color="logout" style="width: 100%; text-transform: capitalize; display: flex; justify-content: left;">
@@ -47,7 +47,7 @@
                     </v-btn>
                 </span>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 <script setup lang="js">
@@ -93,14 +93,13 @@ const threads = ref([
   'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
-  'Lorem ipsum dolor Lorem amet.',  'Lorem ipsum dolor Lorem amet.',
+  'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
   'Lorem ipsum dolor Lorem amet.',
 ])
-
 </script>
 <style lang="scss" scoped>
 .divider, .divider1 {

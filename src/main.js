@@ -6,11 +6,10 @@ import '@mdi/font/css/materialdesignicons.css'
 import router from './router'
 
 
-const pinia = createPinia()
 const app = createApp(App)
 
 app.use(router)
-app.use(pinia)
 app.use(vuetify)
+app.use(createPinia());
 
 app.mount('#app')

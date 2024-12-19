@@ -1,6 +1,6 @@
 module.exports = {
   transpileDependencies: [
-    'dependency-name', // Thay thế bằng tên dependencies nếu cần
+    'vuetify', // Thay thế bằng tên dependencies nếu cần
   ],
 
   // Tạm thời vô hiệu hóa linting

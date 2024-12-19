@@ -1,8 +1,16 @@
 // src/plugins/vuetify.js
 import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
+import { VListItemGroup, VListItem, VListItemContent, VListItemTitle } from 'vuetify/components';
+
 
 const vuetify = createVuetify({
+  components: {
+    VListItemGroup,
+    VListItem,
+    VListItemContent,
+    VListItemTitle,
+  },
   theme: {
     defaultTheme: 'light',
     themes: {

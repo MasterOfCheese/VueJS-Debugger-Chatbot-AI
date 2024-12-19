@@ -1,5 +1,5 @@
 <script setup lang="js">
-import { useMessageStore } from '@/stores/messageStore';
+// import { useMessageStore } from '@/stores/messageStore';
 import ChatBox from "./components/ChatBox.vue";
 import ChatsContainer from "./components/ChatsContainer.vue";
 import LeftSideBar from "./components/LeftSideBar.vue";
@@ -9,30 +9,43 @@ import { useTheme } from 'vuetify/lib/framework'
 import { useThemeStore } from './stores/useThemeStore'
 import { toggleUseThemeStore } from './stores/toggleUseThemeStore'
 import LoginPage from './components/LoginPage.vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import MessageBox from "./components/MessageBox.vue"
+import UserOptions from "./components/UserOptions.vue"
+import CopyrightBar from './components/CopyrightBar.vue'
 
-const isAuthenticated = ref(!!localStorage.getItem('token'));
-const router = useRouter();
-
+// State quản lý tin nhắn
+const lastMessage = ref("")
+const isAuthenticated = ref(!!localStorage.getItem('token'))
+const router = useRouter()
 const theme = useTheme()
 const themeStore = useThemeStore()
 const toggleThemeStore = toggleUseThemeStore()
+// state điều khiển hiển thị modal tìm kiếm
+const showSearchBar = ref(false)
+const searchText = ref('')
+const isMessageSent = ref(false)
 
-// const isAuthenticated = ref(false)
+// Hàm gửi tin nhắn từ ChatBox
+const handleSendMessage = (message) => {
+  lastMessage.value = message
+  isMessageSent.value = true
+}
 
 // theo dõi sự thay đổi từ Vuetify + cập nhật vào Pinia
 watch(
   () => theme.global.current.value.dark,
   (isDark) => {
-    themeStore.setDarkMode(isDark);
-    toggleThemeStore.setDarkMode(isDark);
+    themeStore.setDarkMode(isDark)
+    toggleThemeStore.setDarkMode(isDark)
   }
 )
+
 // Logic xử lý trạng thái đăng nhập
 const onLoginSuccess  = (token) => {
   localStorage.setItem('token', token); // Lưu token
   isAuthenticated.value = true; // Cập nhật trạng thái
-  alert('Login successful!');
+  // alert('Login successful!');
   router.push('/'); // Điều hướng ngay sau khi lưu token
 };
 
@@ -48,11 +61,8 @@ onMounted(() => {
 const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-sidebar' : 'toggle-light-sidebar'))
 
-const messageStore = useMessageStore()
+// const messageStore = useMessageStore()
 
-// state điều khiển hiển thị modal tìm kiếm
-const showSearchBar = ref(false)
-const searchText = ref('')
 
 const performSearch = () => {
   console.log('Searching:', searchText.value)
@@ -66,9 +76,24 @@ const performSearch = () => {
     <div v-else class="wrapper">
     <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
     <div class="app-container">
-      <ChatsContainer :messageSent="messageStore.messageSent" :lastMessage="messageStore.message" class="chats-container" />
-      <ChatBox />
-    </div>
+        <!-- ChatsContainer ẩn khi messageSent = true -->
+        <ChatsContainer
+          v-if="!isMessageSent"
+          class="chats-container"
+        />
+
+        <!-- ChatBox -->
+        <ChatBox
+          v-if="!isMessageSent"
+          @sendMessage="handleSendMessage"
+        />
+        <!-- Hiển thị MessageBox khi messageSent = true -->
+        <MessageBox
+          v-if="isMessageSent"
+          :content="lastMessage"
+          role="user"
+        />
+      </div>
      <!-- vuetify Modal Search Bar -->
      <v-dialog
       v-model="showSearchBar"
@@ -98,6 +123,8 @@ const performSearch = () => {
       </v-card>
     </v-dialog>
     <toggle-mode :class="toggleSidebarClass" />
+    <UserOptions />
+    <CopyrightBar/>
     </div>
   </div>
 </template>
