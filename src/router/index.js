@@ -2,7 +2,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '../App.vue';
 import LoginPage from '@/components/LoginPage.vue';
-import ChatBox from '@/components/ChatBox.vue';
+import ChatsContainer from '@/components/ChatsContainer.vue';
 
 const routes = [
   {
@@ -11,7 +11,7 @@ const routes = [
     children: [
       {
         path: '',
-        component: ChatBox,
+        component: ChatsContainer,
         meta: { requiresAuth: true },
       },
       {

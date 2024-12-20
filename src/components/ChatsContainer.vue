@@ -18,13 +18,11 @@
       </div>
     </div>
 
-    <ChatResponse />
   </div>
 </template>
 
 <script setup lang="js">
 import { ref, onMounted } from "vue"
-import ChatResponse from "./ChatResponse.vue"
 
 // Biến trạng thái sidebar
 const isDarkMode = ref(false)

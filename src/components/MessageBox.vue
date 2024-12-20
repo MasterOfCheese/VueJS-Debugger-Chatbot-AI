@@ -1,13 +1,10 @@
 <template>
     <div>
       <span v-if="isUser" class="user-icon"></span>
-      <img
-        v-else
-        class="chatgpt-icon"
-      />
-      <div>
-        <div v-if="isUser" class="user-name"></div>
-        <div v-else class="chatgpt-name">ChatGPT</div>
+
+      <img v-else class="chatgpt-icon"/>
+      <div class="respond-bar">
+        <div v-if="!isUser" class="chatgpt-name">Chatbot</div>
         <div class="message-content">{{ content }}</div>
       </div>
     </div>
@@ -48,8 +45,8 @@
   }
   
   .chatgpt-icon {
-    width: 20px;
-    height: 20px;
+    /* width: 20px;
+    height: 20px; */
     margin-top: 4px;
   }
   

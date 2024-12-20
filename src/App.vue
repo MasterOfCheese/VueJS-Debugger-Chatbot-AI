@@ -1,8 +1,8 @@
 <script setup lang="js">
 // import { useMessageStore } from '@/stores/messageStore';
-import ChatBox from "./components/ChatBox.vue";
-import ChatsContainer from "./components/ChatsContainer.vue";
-import LeftSideBar from "./components/LeftSideBar.vue";
+
+import ChatsContainer from "./components/ChatsContainer.vue"
+import LeftSideBar from "./components/LeftSideBar.vue"
 import { ref, watch, onMounted, computed } from 'vue'
 import ToggleMode from './components/ToggleMode.vue'
 import { useTheme } from 'vuetify/lib/framework'
@@ -13,9 +13,10 @@ import { useRouter } from 'vue-router'
 import MessageBox from "./components/MessageBox.vue"
 import UserOptions from "./components/UserOptions.vue"
 import CopyrightBar from './components/CopyrightBar.vue'
+import MessMe from "./components/MessMe.vue"
+import ChatInput from "./components/ChatInput.vue"
 
 // State quản lý tin nhắn
-const lastMessage = ref("")
 const isAuthenticated = ref(!!localStorage.getItem('token'))
 const router = useRouter()
 const theme = useTheme()
@@ -24,14 +25,85 @@ const toggleThemeStore = toggleUseThemeStore()
 // state điều khiển hiển thị modal tìm kiếm
 const showSearchBar = ref(false)
 const searchText = ref('')
-const isMessageSent = ref(false)
 
-// Hàm gửi tin nhắn từ ChatBox
-const handleSendMessage = (message) => {
-  lastMessage.value = message
-  isMessageSent.value = true
-}
+// Mảng lưu tất cả tin nhắn
+const messages = ref([]);
 
+const handleSendMessage = async (message) => {
+  messages.value.push({ content: message, role: 'user' });
+
+  try {
+    const response = await fetch('http://192.168.220.25:5000/chats/1/messages/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlkIjoxLCJ1c2VyX3JvbGUiOiJ1c2VyIiwiZXhwIjoxNzk0NDA1Mzc5fQ.6FOoOjOeztGoQUOb-5GWQP_h8Tiv7KjvrtOJMGf3hwY',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: message }],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Đọc response dưới dạng stream
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let partialLine = "";
+    let doneReading = false; // Biến để kiểm soát vòng lặp
+
+    while (!doneReading) {
+      const { done, value } = await reader.read();
+      if (done) {
+        if (partialLine) {
+          try {
+            const jsonObject = JSON.parse(partialLine);
+            processJsonObject(jsonObject);
+          } catch (jsonError) {
+            console.error("Error parsing final line:", partialLine, jsonError);
+          }
+        }
+        doneReading = true; // Đánh dấu đã đọc xong
+        break;
+      }
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = (partialLine + chunk).split('\n');
+      partialLine = lines.pop(); // Lưu lại phần chưa hoàn thành
+
+      for (const line of lines) {
+        if (line.trim() !== "") {
+          try {
+            const jsonObject = JSON.parse(line);
+            processJsonObject(jsonObject);
+          } catch (jsonError) {
+            console.error("Error parsing line:", line, jsonError);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error calling API:', error);
+  }
+};
+
+const processJsonObject = (jsonObject) => {
+  if (jsonObject.message && jsonObject.message.content) {
+    addResponseFromModel(jsonObject.message.content);
+  } else if (jsonObject.done_reason === "stop") {
+    console.log("Conversation Ended");
+  }
+};
+
+const addResponseFromModel = (response) => {
+  messages.value.push({ content: response, role: 'assistant' });
+};
+
+// --------------------------------------------------------
 // theo dõi sự thay đổi từ Vuetify + cập nhật vào Pinia
 watch(
   () => theme.global.current.value.dark,
@@ -77,30 +149,30 @@ const performSearch = () => {
     <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
     <div class="app-container">
         <!-- ChatsContainer ẩn khi messageSent = true -->
-        <ChatsContainer
-          v-if="!isMessageSent"
-          class="chats-container"
-        />
+        <ChatsContainer v-if="messages.length === 0" class="chats-container" />
 
-        <!-- ChatBox -->
-        <ChatBox
-          v-if="!isMessageSent"
-          @sendMessage="handleSendMessage"
-        />
-        <!-- Hiển thị MessageBox khi messageSent = true -->
-        <MessageBox
-          v-if="isMessageSent"
-          :content="lastMessage"
-          role="user"
-        />
+        <!-- ChatBox cũ-->
+        <MessMe v-if="messages.length === 0" />
+
+        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto;">
+          <!-- Chat Input -->
+          <ChatInput @sendMessage="handleSendMessage" />
+
+          <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
+          <div v-for="(msg, index) in messages" :key="index" class="chat-bar">
+            <MessageBox :content="msg.content" :role="msg.role" />
+          </div>
+        </div>
+
       </div>
-     <!-- vuetify Modal Search Bar -->
-     <v-dialog
-      v-model="showSearchBar"
-      persistent
-      max-width="500"
-      transition="dialog-transition"
-    >
+
+      <!-- vuetify Modal Search Bar -->
+      <v-dialog
+        v-model="showSearchBar"
+        persistent
+        max-width="500"
+        transition="dialog-transition"
+      >
       <v-card>
         <v-card-title>
           <span class="headline">Search Chats...</span>

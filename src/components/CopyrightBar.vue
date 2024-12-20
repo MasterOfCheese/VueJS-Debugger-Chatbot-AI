@@ -1,5 +1,5 @@
 <template>
-  <div class="reserved" style="position: absolute; bottom: 10px; font-size: 12px; left: 46.8%;" :class="sidebarClass">
+  <div class="reserved" style="position: absolute; bottom: 10px; font-size: 12px; left: 47.8%;" :class="sidebarClass">
    <span>Copyright © by <strong style="color: red;">AI Department</strong>. All right reserved.</span>
  </div>
 </template>
