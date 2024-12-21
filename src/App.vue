@@ -1,5 +1,5 @@
 <script setup lang="js">
-// import { useMessageStore } from '@/stores/messageStore';
+// import { useMessageStore } from '@/stores/messageStore'
 
 import ChatsContainer from "./components/ChatsContainer.vue"
 import LeftSideBar from "./components/LeftSideBar.vue"
@@ -27,10 +27,10 @@ const showSearchBar = ref(false)
 const searchText = ref('')
 
 // Mảng lưu tất cả tin nhắn
-const messages = ref([]);
+const messages = ref([])
 
 const handleSendMessage = async (message) => {
-  messages.value.push({ content: message, role: 'user' });
+  messages.value.push({ content: message, role: 'user' })
 
   try {
     const response = await fetch('http://192.168.220.25:5000/chats/1/messages/', {
@@ -43,65 +43,65 @@ const handleSendMessage = async (message) => {
       body: JSON.stringify({
         messages: [{ role: 'user', content: message }],
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
     // Đọc response dưới dạng stream
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
 
-    let partialLine = "";
-    let doneReading = false; // Biến để kiểm soát vòng lặp
+    let partialLine = ""
+    let doneReading = false // Biến để kiểm soát vòng lặp
 
     while (!doneReading) {
-      const { done, value } = await reader.read();
+      const { done, value } = await reader.read()
       if (done) {
         if (partialLine) {
           try {
-            const jsonObject = JSON.parse(partialLine);
-            processJsonObject(jsonObject);
+            const jsonObject = JSON.parse(partialLine)
+            processJsonObject(jsonObject)
           } catch (jsonError) {
-            console.error("Error parsing final line:", partialLine, jsonError);
+            console.error("Error parsing final line:", partialLine, jsonError)
           }
         }
-        doneReading = true; // Đánh dấu đã đọc xong
-        break;
+        doneReading = true // đã đọc xong
+        break
       }
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = (partialLine + chunk).split('\n');
-      partialLine = lines.pop(); // Lưu lại phần chưa hoàn thành
+      const chunk = decoder.decode(value, { stream: true })
+      const lines = (partialLine + chunk).split('\n')
+      partialLine = lines.pop() // lưu lại phần chưa hoàn thành
 
       for (const line of lines) {
         if (line.trim() !== "") {
           try {
-            const jsonObject = JSON.parse(line);
-            processJsonObject(jsonObject);
+            const jsonObject = JSON.parse(line)
+            processJsonObject(jsonObject)
           } catch (jsonError) {
-            console.error("Error parsing line:", line, jsonError);
+            console.error("Error parsing line:", line, jsonError)
           }
         }
       }
     }
   } catch (error) {
-    console.error('Error calling API:', error);
+    console.error('Error calling API:', error)
   }
-};
+}
 
 const processJsonObject = (jsonObject) => {
   if (jsonObject.message && jsonObject.message.content) {
-    addResponseFromModel(jsonObject.message.content);
+    addResponseFromModel(jsonObject.message.content)
   } else if (jsonObject.done_reason === "stop") {
-    console.log("Conversation Ended");
+    console.log("Conversation Ended")
   }
-};
+}
 
 const addResponseFromModel = (response) => {
-  messages.value.push({ content: response, role: 'assistant' });
-};
+  messages.value.push({ content: response, role: 'assistant' })
+}
 
 // --------------------------------------------------------
 // theo dõi sự thay đổi từ Vuetify + cập nhật vào Pinia
@@ -115,11 +115,11 @@ watch(
 
 // Logic xử lý trạng thái đăng nhập
 const onLoginSuccess  = (token) => {
-  localStorage.setItem('token', token); // Lưu token
-  isAuthenticated.value = true; // Cập nhật trạng thái
-  // alert('Login successful!');
-  router.push('/'); // Điều hướng ngay sau khi lưu token
-};
+  localStorage.setItem('token', token) // Lưu token
+  isAuthenticated.value = true // Cập nhật trạng thái
+  // alert('Login successful!')
+  router.push('/') // Điều hướng ngay sau khi lưu token
+}
 
 // đồng bộ trạng thái ban đầu
 onMounted(() => {
@@ -127,7 +127,7 @@ onMounted(() => {
  toggleThemeStore.syncWithVuetify(theme)
   // Kiểm tra nếu đã có token trong localStorage thì cập nhật trạng thái
   if (localStorage.getItem('token')) {
-    isAuthenticated.value = true;
+    isAuthenticated.value = true
   }
 })
 const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
@@ -154,7 +154,7 @@ const performSearch = () => {
         <!-- ChatBox cũ-->
         <MessMe v-if="messages.length === 0" />
 
-        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto;">
+        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto">
           <!-- Chat Input -->
           <ChatInput @sendMessage="handleSendMessage" />
 
@@ -226,13 +226,13 @@ const performSearch = () => {
   position: absolute;
   max-width: 710px;
   min-width: 45%;
-  /* background: aqua; */
+  /* background: aqua */
   top: 5%;
   left: 55%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
+  /* justify-content: center */
   align-items: center;
 }
 
