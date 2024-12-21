@@ -30,78 +30,80 @@ const searchText = ref('')
 const messages = ref([])
 
 const handleSendMessage = async (message) => {
-  messages.value.push({ content: message, role: 'user' })
+  messages.value.push({ content: message, role: "user" });
 
   try {
-    const response = await fetch('http://192.168.220.25:5000/chats/1/messages/', {
-      method: 'POST',
+    const response = await fetch("http://192.168.220.25:5000/chats/1/messages/", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlkIjoxLCJ1c2VyX3JvbGUiOiJ1c2VyIiwiZXhwIjoxNzk0NDA1Mzc5fQ.6FOoOjOeztGoQUOb-5GWQP_h8Tiv7KjvrtOJMGf3hwY',
-        'Accept': 'application/json',
+        "Content-Type": "application/json",
+        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlkIjoxLCJ1c2VyX3JvbGUiOiJ1c2VyIiwiZXhwIjoxNzk0NDA1Mzc5fQ.6FOoOjOeztGoQUOb-5GWQP_h8Tiv7KjvrtOJMGf3hwY",
+        Accept: "application/json",
       },
       body: JSON.stringify({
-        messages: [{ role: 'user', content: message }],
+        messages: [{ role: "user", content: message }],
       }),
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     // Đọc response dưới dạng stream
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder()
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
 
-    let partialLine = ""
-    let doneReading = false // Biến để kiểm soát vòng lặp
+    let partialLine = "";
+    let fullResponse = ""; // Biến lưu toàn bộ nội dung phản hồi của chatbot
+    let doneReading = false;
 
     while (!doneReading) {
-      const { done, value } = await reader.read()
+      const { done, value } = await reader.read();
       if (done) {
         if (partialLine) {
           try {
-            const jsonObject = JSON.parse(partialLine)
-            processJsonObject(jsonObject)
+            const jsonObject = JSON.parse(partialLine);
+            if (jsonObject.message && jsonObject.message.content) {
+              fullResponse += jsonObject.message.content;
+            }
           } catch (jsonError) {
-            console.error("Error parsing final line:", partialLine, jsonError)
+            console.error("Error parsing final line:", partialLine, jsonError);
           }
         }
-        doneReading = true // đã đọc xong
-        break
+        doneReading = true;
+        break;
       }
 
-      const chunk = decoder.decode(value, { stream: true })
-      const lines = (partialLine + chunk).split('\n')
-      partialLine = lines.pop() // lưu lại phần chưa hoàn thành
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = (partialLine + chunk).split("\n");
+      partialLine = lines.pop(); // lưu lại phần chưa hoàn thành
 
       for (const line of lines) {
         if (line.trim() !== "") {
           try {
-            const jsonObject = JSON.parse(line)
-            processJsonObject(jsonObject)
+            const jsonObject = JSON.parse(line);
+            if (jsonObject.message && jsonObject.message.content) {
+              fullResponse += jsonObject.message.content; // Gộp nội dung phản hồi
+            }
           } catch (jsonError) {
-            console.error("Error parsing line:", line, jsonError)
+            console.error("Error parsing line:", line, jsonError);
           }
         }
       }
     }
-  } catch (error) {
-    console.error('Error calling API:', error)
-  }
-}
 
-const processJsonObject = (jsonObject) => {
-  if (jsonObject.message && jsonObject.message.content) {
-    addResponseFromModel(jsonObject.message.content)
-  } else if (jsonObject.done_reason === "stop") {
-    console.log("Conversation Ended")
+    // Thêm phản hồi đầy đủ của chatbot vào danh sách messages
+    if (fullResponse) {
+      addResponseFromModel(fullResponse.trim());
+    }
+  } catch (error) {
+    console.error("Error calling API:", error);
   }
-}
+};
 
 const addResponseFromModel = (response) => {
-  messages.value.push({ content: response, role: 'assistant' })
-}
+  messages.value.push({ content: response, role: "assistant" });
+};
 
 // --------------------------------------------------------
 // theo dõi sự thay đổi từ Vuetify + cập nhật vào Pinia
@@ -154,15 +156,16 @@ const performSearch = () => {
         <!-- ChatBox cũ-->
         <MessMe v-if="messages.length === 0" />
 
-        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto">
-          <!-- Chat Input -->
-          <ChatInput @sendMessage="handleSendMessage" />
+        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto; height: 87%;">
 
           <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
-          <div v-for="(msg, index) in messages" :key="index" class="chat-bar">
+          <div v-for="(msg, index) in messages" :key="index" class="chat-bar" style="max-width: 770px; margin: 0 auto;">
             <MessageBox :content="msg.content" :role="msg.role" />
           </div>
         </div>
+        
+          <!-- Chat Input -->
+          <ChatInput @sendMessage="handleSendMessage" />
 
       </div>
 
@@ -217,6 +220,7 @@ const performSearch = () => {
   width: 80%;
   margin: 0 auto;
   padding-bottom: 0;
+  padding-top: 80px;
 }
 
 .chats-container {

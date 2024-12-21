@@ -38,7 +38,11 @@ const chatBoxBottom = ref('')
 
 // Gửi tin nhắn
 const sendChats = async () => {
+  // Xóa tin nhắn ngay khi nhấn nút gửi
   emit('sendMessage', message.value);
+  message.value = '';  // Xóa tin nhắn người dùng nhập vào
+  
+  // Cập nhật giá trị chatBoxBottom
   chatBoxBottom.value = '50px';
 
   if (!message.value) return;
@@ -70,12 +74,12 @@ const sendChats = async () => {
       throw new Error('Network error');
     }
 
-    message.value = '';
     console.log('Tin nhắn đã gửi thành công');
   } catch (error) {
     console.error('Error sending message: ', error);
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
@@ -96,15 +100,12 @@ const sendChats = async () => {
     gap: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     position: absolute;
-    width: 16%;
+    width: 45%;
     bottom: 18%;
     left: 55%;
     transition: all 0.35s ease-in-out;
     transform: translateX(-50%);
-    &:focus-within, &:hover, &:active {
-      width: 45%;
-      transition: all 0.35s ease-in-out;
-    }
+    background-color: #fff;
   }
   
   .input-container {
