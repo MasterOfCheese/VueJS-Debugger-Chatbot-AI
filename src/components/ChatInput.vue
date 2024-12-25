@@ -96,15 +96,11 @@ const sendChats = async () => {
     gap: 10px;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     position: absolute;
-    width: 16%;
+    width: 45%;
     bottom: 18%;
     left: 55%;
     transition: all 0.35s ease-in-out;
     transform: translateX(-50%);
-    &:focus-within, &:hover, &:active {
-      width: 45%;
-      transition: all 0.35s ease-in-out;
-    }
   }
   
   .input-container {
@@ -114,6 +110,7 @@ const sendChats = async () => {
     border: 2px solid #d1d1d1;
     padding: 10px;
     border-radius: 8px;
+    background-color: #fff;
   }
   
   .message-input {

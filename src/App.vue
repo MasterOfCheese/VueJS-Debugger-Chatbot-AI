@@ -91,13 +91,19 @@ const handleSendMessage = async (message) => {
   }
 }
 
+let chatbotResponse = '';
+
 const processJsonObject = (jsonObject) => {
   if (jsonObject.message && jsonObject.message.content) {
-    addResponseFromModel(jsonObject.message.content)
+    // Gom nội dung lại
+    chatbotResponse += jsonObject.message.content;
   } else if (jsonObject.done_reason === "stop") {
-    console.log("Conversation Ended")
+    // Sau khi hết nội dung trả về, thêm tin nhắn chatbot vào mảng messages
+    messages.value.push({ content: chatbotResponse, role: 'assistant' });
+    chatbotResponse = ''; // Reset lại nội dung
   }
-}
+};
+
 
 const addResponseFromModel = (response) => {
   messages.value.push({ content: response, role: 'assistant' })
@@ -154,16 +160,15 @@ const performSearch = () => {
         <!-- ChatBox cũ-->
         <MessMe v-if="messages.length === 0" />
 
-        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto">
-          <!-- Chat Input -->
-          <ChatInput @sendMessage="handleSendMessage" />
-
+        <div class="chat-box" style="overflow-y: auto; width: 106%; margin: 0 auto; height: 88%; position: relative; top: 4em;">
           <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
           <div v-for="(msg, index) in messages" :key="index" class="chat-bar">
             <MessageBox :content="msg.content" :role="msg.role" />
           </div>
         </div>
 
+        <!-- Chat Input -->
+        <ChatInput @sendMessage="handleSendMessage" />
       </div>
 
       <!-- vuetify Modal Search Bar -->
@@ -235,7 +240,10 @@ const performSearch = () => {
   /* justify-content: center */
   align-items: center;
 }
-
+.chat-bar {
+    width: 50%;
+    margin: 0 auto;
+}
 .side-bar {
     width: 260px;
     background-color: #F9F9F9;
