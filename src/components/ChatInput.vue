@@ -115,6 +115,7 @@ const sendChats = async () => {
     border: 2px solid #d1d1d1;
     padding: 10px;
     border-radius: 8px;
+    background-color: #fff;
   }
   
   .message-input {
