@@ -1,85 +1,103 @@
 <template>
-    <!-- Ô nhập tin nhắn và nút gửi -->
-    <div class="chat-box" :style="{ bottom: chatBoxBottom }">
-      <div class="input-container">
-        <input
-          v-model="message"
-          type="text"
-          class="message-input"
-          placeholder="Message FoxconnGPT :))"
-          @keydown.enter="sendChats"
-        />
-        <div class="buttons-container">
-          <button
-            class="send-button"
-            :disabled="!message"
-            :style="{
-              backgroundColor: message ? '#007bff' : 'unset',
-              cursor: message ? 'pointer' : 'unset',
-            }"
-            :title="!message ? 'Message is empty!' : ''"
-            @click="sendChats"
-          ></button>
-        </div>
+  <div class="chat-box" :style="{ bottom: chatBoxBottom }">
+    <div class="input-container">
+      <input
+        v-model="message"
+        type="text"
+        class="message-input"
+        placeholder="Message FoxconnGPT :))"
+        @keydown.enter="sendChats"
+      />
+      <div class="buttons-container">
+        <button
+          class="send-button"
+          :disabled="!message"
+          @click="sendChats"
+        ></button>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { defineEmits } from 'vue'
+import { ref, defineEmits } from 'vue';
 
-const emit = defineEmits(['sendMessage'])
-// state cục bộ thay thế messageStore
-const message = ref('')
-// const messageSent = ref(false)
-
+const message = ref('');
+const chatId = ref(null);
 const chatBoxBottom = ref('')
+const emit = defineEmits(['sendMessage'])
 
 // Gửi tin nhắn
 const sendChats = async () => {
+  console.log('Starting sendChats...');
+  chatBoxBottom.value = '50px'; // Cập nhật vị trí của chat box
   // Xóa tin nhắn ngay khi nhấn nút gửi
-  emit('sendMessage', message.value);
-  message.value = '';  // Xóa tin nhắn người dùng nhập vào
-  
-  // Cập nhật giá trị chatBoxBottom
-  chatBoxBottom.value = '50px';
+  const currentMessage = message.value; // Lưu tin nhắn hiện tại
+  message.value = ''; // Xóa tin nhắn người dùng nhập vào
 
-  if (!message.value) return;
+  // Kiểm tra và tạo chat nếu chưa có chatId
+  if (!chatId.value) {
+    try {
+      console.log('About to call create chat API...');
+      const createChatResponse = await fetch('http://192.168.220.25:5000/chats/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          accept: 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        body: JSON.stringify({ model: 'qwen2.5:0.5b' }),
+      });
+
+      if (!createChatResponse.ok) {
+        const errorText = await createChatResponse.text();
+        console.error('Error creating chat:', createChatResponse.status, errorText);
+        return;
+      }
+
+      const chatData = await createChatResponse.json();
+      chatId.value = chatData.id; 
+      console.log('Chat created successfully:', chatData);
+      console.log('New chat ID:', chatId.value);
+    } catch (error) {
+      console.error('Error in create chat:', error);
+      return;
+    }
+  }
+
+  // Gửi tin nhắn vào đoạn chat đã tạo
+  if (!currentMessage) return; // Nếu không có tin nhắn thì dừng
+  
+  // Emit tin nhắn đi
+  emit('sendMessage', { content: currentMessage, role: 'user', chatId: chatId.value });
 
   const payload = {
-    messages: [
-      {
-        role: 'user',
-        content: message.value,
-      },
-    ],
+    messages: [{ role: 'user', content: currentMessage }],
   };
 
-  console.log('Payload: ', payload);
-
   try {
-    const res = await fetch('http://192.168.220.25:5000/chats/1/messages', {
+    console.log('Sending message...');
+    const sendMessageResponse = await fetch(`http://192.168.220.25:5000/chats/${chatId.value}/messages`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlkIjoxLCJ1c2VyX3JvbGUiOiJ1c2VyIiwiZXhwIjoxNzk0NDA1Mzc5fQ.6FOoOjOeztGoQUOb-5GWQP_h8Tiv7KjvrtOJMGf3hwY',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      console.error('Server response: ', res);
-      throw new Error('Network error');
+    if (!sendMessageResponse.ok) {
+      console.error('Error sending message:', sendMessageResponse);
+      return;
     }
 
-    console.log('Tin nhắn đã gửi thành công');
+    console.log('Message sent successfully to chat:', chatId.value);
+
   } catch (error) {
-    console.error('Error sending message: ', error);
+    console.error('Error in send message:', error);
   }
 };
-
 </script>
 
 <style lang="scss" scoped>

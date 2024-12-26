@@ -29,32 +29,32 @@ const searchText = ref('')
 // Mảng lưu tất cả tin nhắn
 const messages = ref([])
 
-const handleSendMessage = async (message) => {
-  messages.value.push({ content: message, role: "user" });
+const handleSendMessage = async ({ content, role, chatId }) => {
+  messages.value.push({ content, role });
 
   try {
-    const response = await fetch("http://192.168.220.25:5000/chats/1/messages/", {
-      method: "POST",
+    const response = await fetch(`http://192.168.220.25:5000/chats/${chatId}/messages/`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImlkIjoxLCJ1c2VyX3JvbGUiOiJ1c2VyIiwiZXhwIjoxNzk0NDA1Mzc5fQ.6FOoOjOeztGoQUOb-5GWQP_h8Tiv7KjvrtOJMGf3hwY",
-        Accept: "application/json",
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        Accept: 'application/json',
       },
       body: JSON.stringify({
-        messages: [{ role: "user", content: message }],
+        messages: [{ role, content }],
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error('HTTP error! status: ' + response.status);
     }
 
-    // Đọc response dưới dạng stream
-    const reader = response.body.getReader();
+      // Đọc response dưới dạng stream
+      const reader = response.body.getReader();
     const decoder = new TextDecoder();
 
-    let partialLine = "";
-    let fullResponse = ""; // Biến lưu toàn bộ nội dung phản hồi của chatbot
+    let partialLine = '';
+    let fullResponse = '';
     let doneReading = false;
 
     while (!doneReading) {
@@ -67,7 +67,7 @@ const handleSendMessage = async (message) => {
               fullResponse += jsonObject.message.content;
             }
           } catch (jsonError) {
-            console.error("Error parsing final line:", partialLine, jsonError);
+            console.error('Error parsing final line:', partialLine, jsonError);
           }
         }
         doneReading = true;
@@ -75,18 +75,18 @@ const handleSendMessage = async (message) => {
       }
 
       const chunk = decoder.decode(value, { stream: true });
-      const lines = (partialLine + chunk).split("\n");
-      partialLine = lines.pop(); // lưu lại phần chưa hoàn thành
+      const lines = (partialLine + chunk).split('\n');
+      partialLine = lines.pop();
 
       for (const line of lines) {
-        if (line.trim() !== "") {
+        if (line.trim() !== '') {
           try {
             const jsonObject = JSON.parse(line);
             if (jsonObject.message && jsonObject.message.content) {
-              fullResponse += jsonObject.message.content; // Gộp nội dung phản hồi
+              fullResponse += jsonObject.message.content;
             }
           } catch (jsonError) {
-            console.error("Error parsing line:", line, jsonError);
+            console.error('Error parsing line:', line, jsonError);
           }
         }
       }
@@ -97,7 +97,7 @@ const handleSendMessage = async (message) => {
       addResponseFromModel(fullResponse.trim());
     }
   } catch (error) {
-    console.error("Error calling API:", error);
+    console.error('Error calling API:', error);
   }
 };
 
@@ -119,7 +119,6 @@ watch(
 const onLoginSuccess  = (token) => {
   localStorage.setItem('token', token) // Lưu token
   isAuthenticated.value = true // Cập nhật trạng thái
-  // alert('Login successful!')
   router.push('/') // Điều hướng ngay sau khi lưu token
 }
 
@@ -152,22 +151,17 @@ const performSearch = () => {
     <div class="app-container">
         <!-- ChatsContainer ẩn khi messageSent = true -->
         <ChatsContainer v-if="messages.length === 0" class="chats-container" />
-
         <!-- ChatBox cũ-->
         <MessMe v-if="messages.length === 0" />
-
         <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto; height: 87%;">
-
           <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
           <div v-for="(msg, index) in messages" :key="index" class="chat-bar" style="max-width: 770px; margin: 0 auto;">
             <MessageBox :content="msg.content" :role="msg.role" />
           </div>
         </div>
-        
-          <!-- Chat Input -->
-          <ChatInput @sendMessage="handleSendMessage" />
-
-      </div>
+        <!-- Chat Input -->
+        <ChatInput @sendMessage="handleSendMessage" />
+    </div>
 
       <!-- vuetify Modal Search Bar -->
       <v-dialog
