@@ -1,6 +1,8 @@
+<!-- When I wrote this code, only I and God knew how it worked. -->
+<!-- Now, only God knows it :D -->
+<!-- Happy debugging! =^__^=! -->
+ 
 <script setup lang="js">
-// import { useMessageStore } from '@/stores/messageStore'
-
 import ChatsContainer from "./components/ChatsContainer.vue"
 import LeftSideBar from "./components/LeftSideBar.vue"
 import { ref, watch, onMounted, computed } from 'vue'
@@ -16,6 +18,7 @@ import CopyrightBar from './components/CopyrightBar.vue'
 import MessMe from "./components/MessMe.vue"
 import ChatInput from "./components/ChatInput.vue"
 import { useChatStore } from "@/stores/Chatstore";
+import { useSessionStore } from "./stores/SessionStore"
 
 
 // State quản lý tin nhắn
@@ -29,6 +32,7 @@ const showSearchBar = ref(false)
 const searchText = ref('')
 const route = useRoute();
 const chatStore = useChatStore();
+const sessionStore = useSessionStore();
 
 // Xác định xem router-view có hiển thị không
 const showRouterView = computed(() => route.path.startsWith('/chats'));
@@ -37,9 +41,8 @@ const showRouterView = computed(() => route.path.startsWith('/chats'));
 const messages = ref([])
 const handleSendMessage = async ({ content, role, chatId }) => {
   messages.value.push({ content, role });
-
   try {
-    const response = await fetch(`http://192.168.220.25:5000/chats/${chatId}/messages/`, {
+    const response = await fetch(`http://192.168.75.25:5000/chats/${chatId}/messages/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -121,19 +124,30 @@ watch(
 )
 
 // Logic xử lý trạng thái đăng nhập
-const onLoginSuccess  = (token) => {
-  localStorage.setItem('token', token) // save token
-  isAuthenticated.value = true // update state trang thai
-  router.push('/') // route ngay sau khi save token
-}
+const onLoginSuccess = (token) => {
+  localStorage.setItem('token', token);
+  isAuthenticated.value = true;
+
+  const redirectUrl = sessionStore.getUrl();
+  if (!redirectUrl || redirectUrl === '/') {
+    console.log('No previous URL, redirecting to homepage.');
+    router.push('/');
+  } else {
+    console.log('Redirecting to previous URL:', redirectUrl);
+    router.push(redirectUrl);
+  }
+};
 
 // đồng bộ trạng thái ban đầu
 onMounted(() => {
- themeStore.syncWithVuetify(theme)
- toggleThemeStore.syncWithVuetify(theme)
-  // Kiểm tra nếu đã có token trong localStorage thì cập nhật trạng thái
+  themeStore.syncWithVuetify(theme);
+  toggleThemeStore.syncWithVuetify(theme);
   if (localStorage.getItem('token')) {
-    isAuthenticated.value = true
+    isAuthenticated.value = true;
+  } else {
+    // const currentUrl = route.fullPath;
+    console.log('Current URL:', route.fullPath); // Debug
+    sessionStore.saveUrl(route.fullPath);
   }
 },
 () => {

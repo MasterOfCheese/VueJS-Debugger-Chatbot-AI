@@ -34,7 +34,7 @@ const emit = defineEmits(['sendMessage'])
 const route = useRoute(); // Lấy route hiện tại
 const router = useRouter();
 
-// func xy ly xuống dòng khi an phim shift+enter9xuogn dong), ngan ko cho sendChats luon
+// func xu ly xuống dòng khi an phim shift+enter9xuogn dong), ngan ko cho sendChats luon
 const handleKeydown = (event) => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
@@ -53,7 +53,7 @@ const sendChats = async () => {
     if (!chatId.value) {
       try {
         console.log('About to call create chat API...');
-        const createChatResponse = await fetch('http://192.168.220.25:5000/chats/create', {
+        const createChatResponse = await fetch('http://192.168.75.25:5000/chats/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
