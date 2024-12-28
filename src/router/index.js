@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import App from '../App.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import MessageBox from '@/components/MessageBox.vue';
-
+import { useSessionStore } from '@/stores/SessionStore';
 const routes = [
   {
     path: '/',
@@ -30,16 +30,22 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
+  const sessionStore = useSessionStore();
 
-  if (to.path === '/login' && isAuthenticated) {
-    return next('/');
+  if (!isAuthenticated && to.path !== '/login') {
+    // Lưu URL trước khi chuyển hướng đến trang login
+    sessionStore.saveUrl(to.fullPath);
+    return next('/login');
   }
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    return next('/login');
+  if (to.path === '/login' && isAuthenticated) {
+    // Đã đăng nhập nhưng vào /login -> điều hướng về trang trước đó (hoặc trang chủ nếu không có)
+    return next(sessionStore.getUrl() || '/');
   }
 
   next();
 });
+
+
 
 export default router;

@@ -46,7 +46,7 @@ const fetchMessages = async (chatId) => {
   }
 };
 
-// Lắng nghe sự thay đổi của chatId và gọi fetchMessages khi thay đổi
+// theo dõi sự thay đổi của chatId và gọi fetchMessages khi thay đổi
 watch(chatId, (newChatId) => {
   if (newChatId) {
     fetchMessages(newChatId); // Gọi hàm fetch khi chatId thay đổi

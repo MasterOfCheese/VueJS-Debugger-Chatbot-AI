@@ -3,7 +3,8 @@
         <div class="merged-thread" :class="sidebarClass">
             <div title="New Thread" class="new-thread">
                 <div>
-                    <v-btn variant="elevated" color="addnew" style="width: 100%; text-transform: capitalize; display: flex; justify-content: left;">
+                    <v-btn variant="elevated" color="addnew" style="width: 100%; text-transform: capitalize; display: flex; justify-content: left;"
+                    a href="/">
                     <span>+</span>New Thread
                     </v-btn>
                 </div>
@@ -53,6 +54,13 @@
 <script setup lang="js">
 import { onMounted, defineEmits, ref, computed } from "vue"
 import { useThemeStore } from '../stores/useThemeStore'
+// import { useRouter } from 'vue-router'
+
+// const router = useRouter()
+
+// const navigateToHome = () => {
+//   router.push('/') // Điều hướng về trang "/" (là trang chủ đấy ông kễnh ạ)
+// };
 
 // Get trạng thái `isDarkMode` từ store
 const themeStore = useThemeStore();

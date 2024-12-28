@@ -1,20 +1,19 @@
-// stores/chatStore.js
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useChatStore = defineStore('chat', () => {
-  // Lưu trữ tin nhắn của cuộc trò chuyện
+  // lưu trữ tin nhắn của cuộc trò chuyện
   const messages = ref([]); 
 
   // Hàm lấy tin nhắn từ API
   const fetchMessages = async (chatId) => {
     try {
-      const response = await fetch(`http://192.168.220.25:5000/chats/${chatId}/messages`, {
+      const response = await fetch(`http://192.168.75.25:5000/chats/${chatId}/messages`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           accept: 'application/json',
-          Authorization: 'Bearer ' + localStorage.getItem('token'), // Nếu cần token
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
 
@@ -23,7 +22,7 @@ export const useChatStore = defineStore('chat', () => {
       }
 
       const data = await response.json();
-          // Xử lý trường `role` (hoặc `chat_role`)
+          // xử lý trường `role` (hoặc `chat_role`)
           const formattedMessages = data.map(message => ({
             ...message, 
             role: message.chat_role 
@@ -37,7 +36,7 @@ export const useChatStore = defineStore('chat', () => {
   // func post tin nhắn mới lên API
   const sendMessage = async (chatId, content) => {
     try {
-      const response = await fetch(`http://192.168.220.25:5000/chats/${chatId}/messages`, {
+      const response = await fetch(`http://192.168.75.25:5000/chats/${chatId}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
