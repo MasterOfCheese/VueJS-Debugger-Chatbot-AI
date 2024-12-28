@@ -6,12 +6,16 @@
         type="text"
         class="message-input"
         placeholder="Message FoxconnGPT :))"
-        @keydown.enter="sendChats"
-      />
+        @keydown="handleKeydown"
+        />
       <div class="buttons-container">
         <button
           class="send-button"
           :disabled="!message"
+          :style="{
+            backgroundColor: message ? '#007bff' : 'unset',
+            cursor: message ? 'pointer' : 'unset',
+          }"
           @click="sendChats"
         ></button>
       </div>
@@ -21,83 +25,70 @@
 
 <script setup>
 import { ref, defineEmits } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const message = ref('');
 const chatId = ref(null);
 const chatBoxBottom = ref('')
 const emit = defineEmits(['sendMessage'])
+const route = useRoute(); // Lấy route hiện tại
+const router = useRouter();
 
+// func xy ly xuống dòng khi an phim shift+enter9xuogn dong), ngan ko cho sendChats luon
+const handleKeydown = (event) => {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendChats();
+  }
+};
 // Gửi tin nhắn
 const sendChats = async () => {
   console.log('Starting sendChats...');
-  chatBoxBottom.value = '50px'; // Cập nhật vị trí của chat box
-  // Xóa tin nhắn ngay khi nhấn nút gửi
-  const currentMessage = message.value; // Lưu tin nhắn hiện tại
-  message.value = ''; // Xóa tin nhắn người dùng nhập vào
+  chatBoxBottom.value = '50px';
+  const currentMessage = message.value;
+  message.value = '';
 
-  // Kiểm tra và tạo chat nếu chưa có chatId
-  if (!chatId.value) {
-    try {
-      console.log('About to call create chat API...');
-      const createChatResponse = await fetch('http://192.168.220.25:5000/chats/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          accept: 'application/json',
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-        },
-        body: JSON.stringify({ model: 'qwen2.5:0.5b' }),
-      });
+  // Nếu chatId có trong URL, dùng chatId đó, nếu không thì tạo chat mới
+  if (!route.params.chatId) {
+    if (!chatId.value) {
+      try {
+        console.log('About to call create chat API...');
+        const createChatResponse = await fetch('http://192.168.220.25:5000/chats/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            accept: 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token'),
+          },
+          body: JSON.stringify({ model: 'qwen2.5:0.5b' }),
+        });
 
-      if (!createChatResponse.ok) {
-        const errorText = await createChatResponse.text();
-        console.error('Error creating chat:', createChatResponse.status, errorText);
+        if (!createChatResponse.ok) {
+          const errorText = await createChatResponse.text();
+          console.error('Error creating chat:', createChatResponse.status, errorText);
+          return;
+        }
+
+        const chatData = await createChatResponse.json();
+        chatId.value = chatData.id;
+        console.log('Chat created successfully:', chatData);
+
+        // Chuyển hướng đến URL mới
+        router.push(`/chats/${chatId.value}/messages`);
+      } catch (error) {
+        console.error('Error in create chat:', error);
         return;
       }
-
-      const chatData = await createChatResponse.json();
-      chatId.value = chatData.id; 
-      console.log('Chat created successfully:', chatData);
-      console.log('New chat ID:', chatId.value);
-    } catch (error) {
-      console.error('Error in create chat:', error);
-      return;
     }
+  } else {
+    // Nếu có chatId trong URL, dùng chatId đó
+    chatId.value = route.params.chatId;
   }
-
-  // Gửi tin nhắn vào đoạn chat đã tạo
   if (!currentMessage) return; // Nếu không có tin nhắn thì dừng
-  
-  // Emit tin nhắn đi
+  // Emit tin nhắn người dùng đi
   emit('sendMessage', { content: currentMessage, role: 'user', chatId: chatId.value });
-
-  const payload = {
-    messages: [{ role: 'user', content: currentMessage }],
-  };
-
-  try {
-    console.log('Sending message...');
-    const sendMessageResponse = await fetch(`http://192.168.220.25:5000/chats/${chatId.value}/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        accept: 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!sendMessageResponse.ok) {
-      console.error('Error sending message:', sendMessageResponse);
-      return;
-    }
-
-    console.log('Message sent successfully to chat:', chatId.value);
-
-  } catch (error) {
-    console.error('Error in send message:', error);
-  }
 };
+
 </script>
 
 <style lang="scss" scoped>
@@ -116,14 +107,13 @@ const sendChats = async () => {
   .chat-box {
     display: flex;
     gap: 10px;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     position: absolute;
     width: 45%;
     bottom: 18%;
     left: 55%;
     transition: all 0.35s ease-in-out;
     transform: translateX(-50%);
-    background-color: #fff;
+    z-index: 3;
   }
   
   .input-container {
@@ -134,7 +124,8 @@ const sendChats = async () => {
     padding: 10px;
     border-radius: 8px;
     background-color: #fff;
-  }
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
   
   .message-input {
     width: 100%;
@@ -185,5 +176,4 @@ const sendChats = async () => {
         animation: none;
       }
   }
-
 </style>

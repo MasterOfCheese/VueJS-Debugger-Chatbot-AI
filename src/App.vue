@@ -9,12 +9,14 @@ import { useTheme } from 'vuetify/lib/framework'
 import { useThemeStore } from './stores/useThemeStore'
 import { toggleUseThemeStore } from './stores/toggleUseThemeStore'
 import LoginPage from './components/LoginPage.vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import MessageBox from "./components/MessageBox.vue"
 import UserOptions from "./components/UserOptions.vue"
 import CopyrightBar from './components/CopyrightBar.vue'
 import MessMe from "./components/MessMe.vue"
 import ChatInput from "./components/ChatInput.vue"
+import { useChatStore } from "@/stores/Chatstore";
+
 
 // State quản lý tin nhắn
 const isAuthenticated = ref(!!localStorage.getItem('token'))
@@ -25,10 +27,14 @@ const toggleThemeStore = toggleUseThemeStore()
 // state điều khiển hiển thị modal tìm kiếm
 const showSearchBar = ref(false)
 const searchText = ref('')
+const route = useRoute();
+const chatStore = useChatStore();
+
+// Xác định xem router-view có hiển thị không
+const showRouterView = computed(() => route.path.startsWith('/chats'));
 
 // Mảng lưu tất cả tin nhắn
 const messages = ref([])
-
 const handleSendMessage = async ({ content, role, chatId }) => {
   messages.value.push({ content, role });
 
@@ -49,10 +55,9 @@ const handleSendMessage = async ({ content, role, chatId }) => {
       throw new Error('HTTP error! status: ' + response.status);
     }
 
-      // Đọc response dưới dạng stream
-      const reader = response.body.getReader();
+    // Đọc response dưới dạng stream
+    const reader = response.body.getReader();
     const decoder = new TextDecoder();
-
     let partialLine = '';
     let fullResponse = '';
     let doneReading = false;
@@ -117,9 +122,9 @@ watch(
 
 // Logic xử lý trạng thái đăng nhập
 const onLoginSuccess  = (token) => {
-  localStorage.setItem('token', token) // Lưu token
-  isAuthenticated.value = true // Cập nhật trạng thái
-  router.push('/') // Điều hướng ngay sau khi lưu token
+  localStorage.setItem('token', token) // save token
+  isAuthenticated.value = true // update state trang thai
+  router.push('/') // route ngay sau khi save token
 }
 
 // đồng bộ trạng thái ban đầu
@@ -130,12 +135,16 @@ onMounted(() => {
   if (localStorage.getItem('token')) {
     isAuthenticated.value = true
   }
-})
+},
+() => {
+      if (route.params.chatId) {
+        chatStore.fetchMessages(route.params.chatId);
+      }
+    })
 const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-sidebar' : 'toggle-light-sidebar'))
 
 // const messageStore = useMessageStore()
-
 
 const performSearch = () => {
   console.log('Searching:', searchText.value)
@@ -151,18 +160,21 @@ const performSearch = () => {
     <div class="app-container">
         <!-- ChatsContainer ẩn khi messageSent = true -->
         <ChatsContainer v-if="messages.length === 0" class="chats-container" />
-        <!-- ChatBox cũ-->
+        <!-- MessMe ẩn khi messageSent = true -->
         <MessMe v-if="messages.length === 0" />
         <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto; height: 87%;">
           <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
           <div v-for="(msg, index) in messages" :key="index" class="chat-bar" style="max-width: 770px; margin: 0 auto;">
             <MessageBox :content="msg.content" :role="msg.role" />
           </div>
+        </div> 
+         <!-- Router-view ẩn khi ở URL "/" -->
+        <div class="router-view" :style="{ display: showRouterView ? 'block' : 'none' }">
+          <router-view class="namdeptrai-view" />
         </div>
-        <!-- Chat Input -->
-        <ChatInput @sendMessage="handleSendMessage" />
-    </div>
-
+      </div>
+    <!-- Chat Input -->
+    <ChatInput @sendMessage="handleSendMessage" />
       <!-- vuetify Modal Search Bar -->
       <v-dialog
         v-model="showSearchBar"
@@ -250,4 +262,17 @@ const performSearch = () => {
   box-shadow: 3.7px 7.4px 7.4px hsla(0, 8%, 91%, 0.39)!important;
   color: #778eb4;
   }
+  .router-view {
+    width: 106.8%;
+    overflow-y: scroll;
+    position: relative;
+    top: -17%;
+    height: 611%;
+    z-index: 3;
+    background-color: #fff;
+}
+.namdeptrai-view {
+    width: 70%;
+    margin: 0 auto;
+}
 </style>

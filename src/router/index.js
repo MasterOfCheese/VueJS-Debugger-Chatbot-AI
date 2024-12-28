@@ -2,17 +2,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '../App.vue';
 import LoginPage from '@/components/LoginPage.vue';
-import ChatsContainer from '@/components/ChatsContainer.vue';
+import MessageBox from '@/components/MessageBox.vue';
 
 const routes = [
   {
     path: '/',
-    component: App, // App.vue là wrapper chính
+    component: MessageBox, // wrapper chính
     children: [
       {
-        path: '',
-        component: ChatsContainer,
-        meta: { requiresAuth: true },
+        path: 'chats/:chatId/messages', // Nested route cho tin nhắn
+        name: 'messages',
+        component: App,
+        props: true,
       },
       {
         path: 'login',
