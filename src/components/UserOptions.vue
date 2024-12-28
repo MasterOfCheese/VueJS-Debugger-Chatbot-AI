@@ -61,6 +61,7 @@ export default {
     border-radius: 50%;
     padding: 0;
     cursor: pointer;
+    z-index: 3;
 }
 i.mdi-account.mdi.v-icon.notranslate.v-theme--light.v-icon--size-default {
     color: #fff;

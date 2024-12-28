@@ -1,117 +1,89 @@
 <template>
-  <div :class="['block-chats', { 'user-chat': isUser, 'ChatBot-chat': !isUser }]">
-    <span v-if="isUser" class="user-icon"></span>
-    <img v-else class="ChatBot-icon" />
-    
-    <div :class="['respond-bar', { 'user-respond': isUser, 'ChatBot-respond': !isUser }]">
-      <div v-if="!isUser" class="ChatBot-name"><img :src="logoUrl" alt="Chatbot Logo"></div>
-      <div :class="['message-content', { 'user-message': isUser, 'ChatBot-message': !isUser }]">
-        {{ content }}
+  <div>
+    <!-- Duyệt qua các tin nhắn từ store -->
+    <div v-for="(message, index) in messagesFromStore" :key="index">
+      <!-- Kiểm tra và phân loại message của user hoặc assistant -->
+      <div :class="['block-chats', { 'user-chat': message.role === 'user', 'ChatBot-chat': message.role !== 'user' }]">
+        <span v-if="message.role === 'user'" class="user-icon"></span>
+        <img v-else class="ChatBot-icon" />
+        
+        <div :class="['respond-bar', { 'user-respond': message.role === 'user', 'ChatBot-respond': message.role !== 'user' }]">
+          <div v-if="message.role !== 'user'" class="ChatBot-name">
+            <img :src="logoUrl" alt="Chatbot Logo" />
+          </div>
+          <div :class="['message-content', { 'user-message': message.role === 'user', 'ChatBot-message': message.role !== 'user' }]">
+            {{ message.content }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
-  
+
 <script setup lang="js">
-import { computed, defineProps } from "vue";
-import logoUrl from "@/assets/logoFii.png"
-const props = defineProps({
-  content: String,
-  role: String
+import { computed, onMounted, watch } from "vue";
+import { useRoute } from 'vue-router';
+import logoUrl from "@/assets/logoFii.png";
+import { useChatStore } from "@/stores/Chatstore";
+
+
+// Khai báo các biến cần thiết
+const route = useRoute();
+const chatStore = useChatStore();
+
+// Lấy tin nhắn từ store (Pinia)
+const messagesFromStore = computed(() => chatStore.messages);
+
+// Lấy chatId từ URL
+const chatId = computed(() => route.params.chatId);
+
+// Hàm lấy dữ liệu tin nhắn từ store
+const fetchMessages = async (chatId) => {
+  try {
+    await chatStore.fetchMessages(chatId); // Gọi hàm fetchMessages trong store
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+  }
+};
+
+// Lắng nghe sự thay đổi của chatId và gọi fetchMessages khi thay đổi
+watch(chatId, (newChatId) => {
+  if (newChatId) {
+    fetchMessages(newChatId); // Gọi hàm fetch khi chatId thay đổi
+  }
 });
 
-const isUser = computed(() => {
-  return props.role === "user";
+// Gọi fetchMessages khi component được mount lần đầu tiên
+onMounted(() => {
+  if (chatId.value) {
+    fetchMessages(chatId.value); // Gọi hàm fetch khi component được mount
+  }
 });
 </script>
 
 <style scoped>
 .block-chats {
-/* display: flex; */
-/* align-items: center; */
-margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
-/* User-specific styles */
 .user-chat .user-icon {
-/* background-color: #007bff; */
-border-radius: 50%;
-width: 40px;
-height: 40px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
 }
-
-/* .user-respond {
-background-color: #e6f7ff;
-color: #0056b3;
-} */
 
 .user-message {
-background-color: #e6f7ff;
-padding: 10px;
-border-radius: 10px;
-max-width: 60%;
-margin-left: auto;
-}
-
-/* Chatbot-specific styles */
-.chatgpt-chat .chatgpt-icon {
-background-color: #28a745;
-border-radius: 50%;
-width: 40px;
-height: 40px;
-}
-
-.chatgpt-respond {
-background-color: #f8f9fa;
-color: #212529;
-}
-
-.chatgpt-message {
-background-color: #f8f9fa;
-padding: 10px;
-border-radius: 10px;
-max-width: 60%;
-}
-
-
-.message {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start; /* Căn chỉnh phần tử theo chiều dọc */
-  margin-bottom: 15px;
-}
-
-.message-user {
-  justify-content: flex-end; /* Căn tin nhắn người dùng về bên phải */
-}
-
-.message-ChatBot {
-  justify-content: flex-start; /* Căn tin nhắn ChatBot về bên trái */
-}
-
-.user-icon {
-  font-size: 18px;
+  background-color: #e6f7ff;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+  margin-left: auto;
 }
 
 .ChatBot-icon {
-  /* width: 20px;
-  height: 20px; */
   margin-top: 4px;
 }
 
-.user-name,
-.ChatBot-name {
-  font-weight: bold;
-  width: 35px;
-  height: 35px;
-  border: 2px solid #f1f1f1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(-40%);
-  background-color: #fff;
-}
 .ChatBot-name img {
   display: flex;
   width: 23px;
@@ -128,14 +100,15 @@ max-width: 60%;
 }
 
 .message-user .message-content {
-  background-color: #7a91e2; /* Màu nền cho tin nhắn người dùng */
+  background-color: #7a91e2;
   color: white;
 }
 
 .message-ChatBot .message-content {
-  background-color: #e1e1e1; /* Màu nền cho tin nhắn ChatBot */
+  background-color: #e1e1e1;
   color: black;
 }
+
 .respond-bar.ChatBot-respond {
   margin-top: -1em;
   margin-bottom: 2.5em;
