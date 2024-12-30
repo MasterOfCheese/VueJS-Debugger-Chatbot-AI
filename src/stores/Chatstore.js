@@ -8,7 +8,7 @@ export const useChatStore = defineStore('chat', () => {
   // Hàm lấy tin nhắn từ API
   const fetchMessages = async (chatId) => {
     try {
-      const response = await fetch(`http://192.168.75.25:5000/chats/${chatId}/messages`, {
+      const response = await fetch(`http://192.168.220.25:5000/chats/messages/${chatId}/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export const useChatStore = defineStore('chat', () => {
   // func post tin nhắn mới lên API
   const sendMessage = async (chatId, content) => {
     try {
-      const response = await fetch(`http://192.168.75.25:5000/chats/${chatId}/messages`, {
+      const response = await fetch(`http://192.168.220.25:5000/chats/messages/${chatId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

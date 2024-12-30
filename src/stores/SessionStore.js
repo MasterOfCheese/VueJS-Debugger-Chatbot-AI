@@ -12,7 +12,7 @@ export const useSessionStore = defineStore('session', () => {
 
   const getUrl = () => {
     const url = localStorage.getItem('previousUrl') || '/';
-    console.log('Retrieving URL from localStorage:', url); // Debug
+    console.log('Retrieving URL from localStorage:', url);
     return url;
   };
 
