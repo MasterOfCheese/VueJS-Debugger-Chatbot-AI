@@ -22,11 +22,13 @@
 </template>
 
 <script setup lang="js">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
+import { useThemeStore } from '../stores/useThemeStore'
 
-// Biến trạng thái sidebar
-const isDarkMode = ref(false)
-const sidebarClass = ref(isDarkMode.value ? "dark-sidebar" : "light-sidebar")
+
+// Get trạng thái `isDarkMode` từ store
+const themeStore = useThemeStore();
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'));
 
 // Biến cục bộ thay thế Pinia store
 const messageSent = ref(false)
