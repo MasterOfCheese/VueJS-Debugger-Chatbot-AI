@@ -42,7 +42,7 @@ const messages = ref([])
 const handleSendMessage = async ({ content, role, chatId }) => {
   messages.value.push({ content, role });
   try {
-    const response = await fetch(`http://192.168.75.25:5000/chats/${chatId}/messages/`, {
+    const response = await fetch(`http://192.168.220.25:5000/chats/messages/${chatId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
