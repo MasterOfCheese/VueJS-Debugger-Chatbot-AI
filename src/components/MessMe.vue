@@ -11,11 +11,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useThemeStore } from '../stores/useThemeStore'
 
-const sidebarClass = ref('default-sidebar-class')
+// const sidebarClass = ref('default-sidebar-class')
 const messageArray = 'What can I help with?'.split('')
 const visibleMessageChars = ref([])
+
+// Get trạng thái `isDarkMode` từ store
+const themeStore = useThemeStore();
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'));
 
 const animateMessage = () => {
   messageArray.forEach((_, index) => {
@@ -56,7 +61,7 @@ onMounted(() => {
   transition-delay: 1.3s;
 }
 
-// .dark-sidebar {
-//   color: #fff;
-// }
+.mess-me.dark-sidebar {
+    color: #fff;
+}
 </style>
