@@ -76,7 +76,7 @@ const fetchChats = async () => {
 
   try {
     const response = await fetch(
-        `http://192.168.220.25:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
+        `http://192.168.137.68:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
         {
         method: 'GET',
         headers: {
@@ -143,7 +143,7 @@ const loadChat = async (chatId) => {
   console.log("Đang tải tin nhắn cho chatId:", chatId);
   try {
     const response = await fetch(
-      `http://192.168.220.25:5000/api/v1/chats/messages/${chatId}/`,
+      `http://192.168.137.68:5000/api/v1/chats/messages/${chatId}/`,
       {
         method: 'GET',
         headers: {
