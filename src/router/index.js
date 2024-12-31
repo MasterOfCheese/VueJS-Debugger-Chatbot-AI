@@ -10,7 +10,7 @@ const routes = [
     component: MessageBox, // wrapper chính
     children: [
       {
-        path: 'chats/:chatId/messages', // Nested route cho tin nhắn
+        path: 'chats/messages/:chatId/', // Nested route cho tin nhắn
         name: 'messages',
         component: App,
         props: true,

@@ -28,10 +28,10 @@ The homepage:
 ![Layout1](./src/assets/Layout1.png)
 
 The chat:
-![Layout2](./src/assets/Layout2.png)
+![Layout2](./src/assets/layout2.png)
 
 The Search bar:
-![Layout3](./src/assets/layout3.png)
+![Layout3](./src/assets/Layout3.png)
 
 The basic with darkmode:
 ![Layout4](./src/assets/Layout4.png)
