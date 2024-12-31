@@ -1,7 +1,3 @@
-<!-- When I wrote this code, only I and God knew how it worked. -->
-<!-- Now, only God knows it :D -->
-<!-- Happy debugging! =^__^=! -->
- 
 <script setup lang="js">
 import ChatsContainer from "./components/ChatsContainer.vue"
 import LeftSideBar from "./components/LeftSideBar.vue"
@@ -17,10 +13,13 @@ import UserOptions from "./components/UserOptions.vue"
 import CopyrightBar from './components/CopyrightBar.vue'
 import MessMe from "./components/MessMe.vue"
 import ChatInput from "./components/ChatInput.vue"
-import { useChatStore } from "@/stores/Chatstore";
 import { useSessionStore } from "./stores/SessionStore"
+import { useChatStore } from '@/stores/Chatstore'
 
-
+// When I wrote this code, only I and God knew how it worked.
+// Now, only God knows it :D 
+// Happy debugging! =^__^=!
+ 
 // State quản lý tin nhắn
 const isAuthenticated = ref(!!localStorage.getItem('token'))
 const router = useRouter()
@@ -31,8 +30,8 @@ const toggleThemeStore = toggleUseThemeStore()
 const showSearchBar = ref(false)
 const searchText = ref('')
 const route = useRoute();
-const chatStore = useChatStore();
 const sessionStore = useSessionStore();
+const chatStore = useChatStore();
 
 // Xác định xem router-view có hiển thị không
 const showRouterView = computed(() => route.path.startsWith('/chats'));
@@ -42,7 +41,7 @@ const messages = ref([])
 const handleSendMessage = async ({ content, role, chatId }) => {
   messages.value.push({ content, role });
   try {
-    const response = await fetch(`http://192.168.220.25:5000/chats/messages/${chatId}/`, {
+    const response = await fetch(`http://192.168.220.25:5000/api/v1/chats/messages/${chatId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,6 +52,7 @@ const handleSendMessage = async ({ content, role, chatId }) => {
         messages: [{ role, content }],
       }),
     });
+    console.log('This is POST method');
 
     if (!response.ok) {
       throw new Error('HTTP error! status: ' + response.status);
@@ -266,7 +266,6 @@ const performSearch = () => {
     margin: -8px 0 0 -8px;
     overflow: hidden;
     height: 101%;
-    overflow-y: scroll;
 }
 .dark-sidebar {
     background-color: #011E4D;

@@ -53,7 +53,7 @@ const sendChats = async () => {
     if (!chatId.value) {
       try {
         console.log('About to call create chat API...');
-        const createChatResponse = await fetch('http://192.168.220.25:5000/chats/create', {
+        const createChatResponse = await fetch('http://192.168.220.25:5000/api/v1/chats/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ const sendChats = async () => {
         console.log('Chat created successfully:', chatData);
 
         // Chuyển hướng đến URL mới
-        router.push(`/chats/${chatId.value}/messages`);
+        router.push(`/chats/messages/${chatId.value}/`);
       } catch (error) {
         console.error('Error in create chat:', error);
         return;
