@@ -26,7 +26,10 @@
 <script setup>
 import { ref, defineEmits } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
+import { useChatStore } from '../stores/Chatstore';
+import { storeToRefs } from 'pinia';
+const chatStore = useChatStore();
+const {leftBarLoading} = storeToRefs(chatStore);
 const message = ref('');
 const chatId = ref(null);
 const chatBoxBottom = ref('')
@@ -53,7 +56,7 @@ const sendChats = async () => {
     if (!chatId.value) {
       try {
         console.log('About to call create chat API...');
-        const createChatResponse = await fetch('http://192.168.137.68:5000/api/v1/chats/create', {
+        const createChatResponse = await fetch('http://172.20.10.4:5000/api/v1/chats/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,7 +75,8 @@ const sendChats = async () => {
         const chatData = await createChatResponse.json();
         chatId.value = chatData.id;
         console.log('Chat created successfully:', chatData);
-
+        
+        leftBarLoading.value = true
         // Chuyển hướng đến URL mới
         router.push(`/chats/messages/${chatId.value}/`);
       } catch (error) {
