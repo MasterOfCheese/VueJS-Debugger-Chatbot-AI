@@ -71,7 +71,7 @@ const fetchChats = async () => {
     return;
   }
 
-  console.log("Bắt đầu tải dữ liệu...");
+  // console.log("Bắt đầu tải dữ liệu...");
   isLoading.value = true;
 
   try {
@@ -86,22 +86,22 @@ const fetchChats = async () => {
       }
     );
 
-    console.log("Phản hồi API nhận được:", response);
+    // console.log("Phản hồi API nhận được:", response);
 
     if (!response.ok) {
       throw new Error(`Lỗi khi tải API: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log("Dữ liệu trả về từ API:", data);
+    // console.log("Dữ liệu trả về từ API:", data);
 
     if (data?.data?.length) {
       lastId.value = data.data[data.data.length - 1].id; // Cập nhật last_id mới
-      console.log(`Thêm ${data.data.length} đoạn hội thoại vào danh sách.`);
+      // console.log(`Thêm ${data.data.length} đoạn hội thoại vào danh sách.`);
       threads.value = [...threads.value, ...data.data]; // add dữ liệu mới
       page.value = data.last_id || page.value + 1; // Update `page` dựa trên `last_id` trả về từ API
-      console.log("Cập nhật page:", page.value);
-      console.log("Dữ liệu thread trả về:", data.data);
+      // console.log("Cập nhật page:", page.value);
+      // console.log("Dữ liệu thread trả về:", data.data);
 
     } else {
       console.log("Không có dữ liệu mới từ API.");
@@ -110,7 +110,7 @@ const fetchChats = async () => {
     console.error("Lỗi khi gọi API:", error);
     return []; // Trả về mảng rỗng khi có lỗi
   } finally {
-    console.log("Kết thúc tải dữ liệu.");
+    // console.log("Kết thúc tải dữ liệu.");
     isLoading.value = false;
     leftBarLoading.value = false;
   }
@@ -118,10 +118,10 @@ const fetchChats = async () => {
 
 // func call API khi trang được tải lần đầu
 onMounted(() => {
-  console.log("Trang đã được load, gọi fetchChats lần đầu.");
+  // console.log("Trang đã được load, gọi fetchChats lần đầu.");
   // fetchChats();
   leftBarLoading.value = true
-  console.log("LeftBarLoading: ",leftBarLoading.value)
+  // console.log("LeftBarLoading: ",leftBarLoading.value)
 });
 
 // func xử lý lazy load khi cuộn tới cuối danh sách
@@ -187,7 +187,7 @@ watch(leftBarLoading, async () => {
       for (const thread of threads.value) {
         if (!thread.name) {
           try {
-            console.log('Fetching thread with ID:', thread.id);
+            // console.log('Fetching thread with ID:', thread.id);
             const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/conversations/${thread.id}/`, {
               method: 'GET',
               headers: {
@@ -213,10 +213,10 @@ watch(leftBarLoading, async () => {
   }
 });
 
-// Watch lắng nghe sự thay đổi của threads
-watch(threads, (newValue) => {
-  console.log("Threads updated:", newValue);
-}, { deep: true }); // Lắng nghe thay đổi sâu
+// // Watch lắng nghe sự thay đổi của threads
+// watch(threads, (newValue) => {
+//   console.log("Threads updated:", newValue);
+// }, { deep: true }); // Lắng nghe thay đổi sâu
 
 </script>
 

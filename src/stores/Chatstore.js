@@ -19,11 +19,11 @@ export const useChatStore = defineStore('chat', () => {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
-      console.log('nếu log chạy được tới cái console log này nghĩa là đã fetch được toàn bộ cuộc trò chuyện bằng GET method rồi');
+  
       if (!response.ok) {
         throw new Error('Failed to fetch messages');
       }
-
+  
       const data = await response.json();
       const formattedMessages = data.map((message) => ({
         ...message,
@@ -33,36 +33,7 @@ export const useChatStore = defineStore('chat', () => {
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
-  };
+  };  
 
-  // Gửi tin nhắn mới
-  const sendMessage = async (chatId, content) => {
-    try {
-      const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          accept: 'application/json',
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-        },
-        body: JSON.stringify({
-          content,
-          chat_role: 'user',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const newMessage = await response.json();
-      messages.value.push(newMessage);
-      return newMessage;
-    } catch (error) {
-      console.error('Error sending message:', error);
-      throw error;
-    }
-  };
-
-  return { messages, leftBarLoading,fetchMessages, sendMessage };
+  return { messages, leftBarLoading,fetchMessages };
 });

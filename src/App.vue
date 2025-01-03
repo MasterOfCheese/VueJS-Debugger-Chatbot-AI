@@ -40,6 +40,9 @@ const showRouterView = computed(() => route.path.startsWith('/chats'));
 const messages = ref([])
 const handleSendMessage = async ({ content, role, chatId }) => {
   messages.value.push({ content, role });
+  // Thêm tin nhắn vào store
+  chatStore.messages.push({ content, role });
+
   try {
     const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
       method: 'POST',
@@ -53,7 +56,6 @@ const handleSendMessage = async ({ content, role, chatId }) => {
       }),
     });
 
-    console.log('This is POST method in APp.vue');
     if(response.ok) {
       // window.location.reload()
     } else {
@@ -105,6 +107,7 @@ const handleSendMessage = async ({ content, role, chatId }) => {
     // Thêm phản hồi đầy đủ của chatbot vào danh sách messages
     if (fullResponse) {
       addResponseFromModel(fullResponse.trim());
+      // chatStore.fetchMessages(chatId);
     }
   } catch (error) {
     console.error('Error calling API:', error);
@@ -112,7 +115,9 @@ const handleSendMessage = async ({ content, role, chatId }) => {
 };
 
 const addResponseFromModel = (response) => {
+  // Thêm phản hồi từ chatbot vào store và messages
   messages.value.push({ content: response, role: "assistant" });
+  // chatStore.messages.push({ content: response, role: "assistant" });
 };
 
 // --------------------------------------------------------
@@ -239,7 +244,7 @@ const performSearch = () => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 80%;
+  width: 75%;
   margin: 0 auto;
   padding-bottom: 0;
   padding-top: 80px;
@@ -263,7 +268,8 @@ const performSearch = () => {
 }
 
 .side-bar {
-    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
     background-color: #F9F9F9;
     margin: -8px 0 0 -8px;
     overflow: hidden;
