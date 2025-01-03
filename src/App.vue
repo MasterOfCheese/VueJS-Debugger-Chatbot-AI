@@ -41,7 +41,7 @@ const messages = ref([])
 const handleSendMessage = async ({ content, role, chatId }) => {
   messages.value.push({ content, role });
   try {
-    const response = await fetch(`http://192.168.137.68:5000/api/v1/chats/messages/${chatId}/`, {
+    const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,9 +52,11 @@ const handleSendMessage = async ({ content, role, chatId }) => {
         messages: [{ role, content }],
       }),
     });
-    console.log('This is POST method');
 
-    if (!response.ok) {
+    console.log('This is POST method in APp.vue');
+    if(response.ok) {
+      // window.location.reload()
+    } else {
       throw new Error('HTTP error! status: ' + response.status);
     }
 
