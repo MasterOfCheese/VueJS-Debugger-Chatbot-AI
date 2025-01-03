@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref, defineEmits, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useChatStore } from '../stores/Chatstore';
 import { storeToRefs } from 'pinia';
@@ -36,6 +36,20 @@ const chatBoxBottom = ref('')
 const emit = defineEmits(['sendMessage'])
 const route = useRoute(); // Lấy route hiện tại
 const router = useRouter();
+
+// Hàm kiểm tra đường dẫn
+const updateChatBoxPosition = () => {
+  if (route.path.startsWith('/chats/messages/')) {
+    chatBoxBottom.value = '50px';
+  }
+};
+
+// watch thay đổi của route (nếu đang ở path /chats/messages/chatId) thì sẽ cập nhật chatBoxBottom
+watch(
+  () => route.path,
+  updateChatBoxPosition,
+  { immediate: true }
+);
 
 // func xu ly xuống dòng khi an phim shift+enter9xuogn dong), ngan ko cho sendChats luon
 const handleKeydown = (event) => {
@@ -93,6 +107,8 @@ const sendChats = async () => {
   emit('sendMessage', { content: currentMessage, role: 'user', chatId: chatId.value });
 };
 
+// Đồng bộ trạng thái ban đầu
+updateChatBoxPosition();
 </script>
 
 <style lang="scss" scoped>
@@ -129,6 +145,12 @@ const sendChats = async () => {
     border-radius: 8px;
     background-color: #fff;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    transition: all 0.15s linear;
+    position: relative;
+    &:focus-within {
+      border: 2px solid #4caf50;
+      transition: all 0.15s linear;
+    }
 }
   
   .message-input {

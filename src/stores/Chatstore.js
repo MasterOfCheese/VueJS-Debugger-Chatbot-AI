@@ -19,7 +19,7 @@ export const useChatStore = defineStore('chat', () => {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to fetch messages');
       }
@@ -30,6 +30,7 @@ export const useChatStore = defineStore('chat', () => {
         role: message.chat_role,
       }));
       messages.value = formattedMessages;
+      console.log('this is GET tin nhan cua chatbot');
     } catch (error) {
       console.error('Error fetching messages:', error);
     }

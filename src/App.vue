@@ -56,68 +56,14 @@ const handleSendMessage = async ({ content, role, chatId }) => {
       }),
     });
 
-    if(response.ok) {
-      // window.location.reload()
-    } else {
+    console.log('this is POST tin nhan cua', role);
+    if(!response.ok) {
       throw new Error('HTTP error! status: ' + response.status);
     }
 
-    // Đọc response dưới dạng stream
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let partialLine = '';
-    let fullResponse = '';
-    let doneReading = false;
-
-    while (!doneReading) {
-      const { done, value } = await reader.read();
-      if (done) {
-        if (partialLine) {
-          try {
-            const jsonObject = JSON.parse(partialLine);
-            if (jsonObject.message && jsonObject.message.content) {
-              fullResponse += jsonObject.message.content;
-            }
-          } catch (jsonError) {
-            console.error('Error parsing final line:', partialLine, jsonError);
-          }
-        }
-        doneReading = true;
-        break;
-      }
-
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = (partialLine + chunk).split('\n');
-      partialLine = lines.pop();
-
-      for (const line of lines) {
-        if (line.trim() !== '') {
-          try {
-            const jsonObject = JSON.parse(line);
-            if (jsonObject.message && jsonObject.message.content) {
-              fullResponse += jsonObject.message.content;
-            }
-          } catch (jsonError) {
-            console.error('Error parsing line:', line, jsonError);
-          }
-        }
-      }
-    }
-
-    // Thêm phản hồi đầy đủ của chatbot vào danh sách messages
-    if (fullResponse) {
-      addResponseFromModel(fullResponse.trim());
-      // chatStore.fetchMessages(chatId);
-    }
   } catch (error) {
     console.error('Error calling API:', error);
   }
-};
-
-const addResponseFromModel = (response) => {
-  // Thêm phản hồi từ chatbot vào store và messages
-  messages.value.push({ content: response, role: "assistant" });
-  // chatStore.messages.push({ content: response, role: "assistant" });
 };
 
 // --------------------------------------------------------
@@ -284,7 +230,7 @@ const performSearch = () => {
   color: #778eb4;
   }
   .router-view {
-    width: 106.8%;
+    width: 110.5%;
     overflow-y: scroll;
     position: relative;
     top: -17%;
