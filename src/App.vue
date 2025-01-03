@@ -284,7 +284,7 @@ const performSearch = () => {
   color: #778eb4;
   }
   .router-view {
-    width: 106.8%;
+    width: 110.5%;
     overflow-y: scroll;
     position: relative;
     top: -17%;
