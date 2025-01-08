@@ -36,9 +36,15 @@
       <v-list-item-group>
         <v-list-item v-for="thread in threads" :key="thread.id" class="recent-threads-item" :class="sidebarClass">
           <v-list-item-content>
-            <router-link v-if="!leftBarLoading" :to="`/chats/messages/${thread.id}`" @click.prevent="loadChat(thread.id)" class="thread-link">
+            <router-link
+              v-if="!leftBarLoading"
+              :to="`/chats/messages/${thread.id}`"
+              @click.prevent="loadChat(thread.id)"
+              class="thread-link"
+              :class="{ 'active-thread': currentChatId === thread.id }">
               {{ thread.name }}
             </router-link>
+            
             <span v-else>Loading...</span>
           </v-list-item-content>
         </v-list-item>
@@ -53,6 +59,10 @@ import { onMounted, ref, computed, watch } from "vue";
 import { useThemeStore } from '../stores/useThemeStore';
 import { useChatStore } from '../stores/Chatstore';
 import { storeToRefs } from "pinia";
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const currentChatId = computed(() => route.params.chatId);
 
 const themeStore = useThemeStore();
 const chatStore = useChatStore();
@@ -219,8 +229,11 @@ watch(leftBarLoading, async () => {
 // }, { deep: true }); // Lắng nghe thay đổi sâu
 
 </script>
-
 <style lang="scss" scoped>
+a.router-link-active {
+  background-color: #E3E3E3; /* Màu nền tùy chỉnh */
+}
+
 .thread-link {
   text-decoration: none;
   color: inherit;
