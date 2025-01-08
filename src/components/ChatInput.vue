@@ -1,6 +1,6 @@
 <template>
   <div class="chat-box" :style="{ bottom: chatBoxBottom }">
-    <div class="input-container">
+    <div class="input-container" :class="sidebarClass">
       <input
         v-model="message"
         type="text"
@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, defineEmits, watch } from 'vue';
+import { ref, defineEmits, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useChatStore } from '../stores/Chatstore';
 import { storeToRefs } from 'pinia';
@@ -36,6 +36,11 @@ const chatBoxBottom = ref('')
 const emit = defineEmits(['sendMessage'])
 const route = useRoute(); // Lấy route hiện tại
 const router = useRouter();
+import { useThemeStore } from '../stores/useThemeStore'
+
+// Get trạng thái `isDarkMode` từ store
+const themeStore = useThemeStore();
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'));
 
 // Hàm kiểm tra đường dẫn
 const updateChatBoxPosition = () => {
@@ -123,6 +128,9 @@ updateChatBoxPosition();
     51% {
       opacity: 1;
     }
+  }
+  .input-container.dark-sidebar {
+    background-color: rgba(50,50,50,.85);
   }
   .chat-box {
     display: flex;

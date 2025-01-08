@@ -62,6 +62,7 @@ import { storeToRefs } from "pinia";
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
+//currentChatId for css backgroundColor of router-link when active the thread
 const currentChatId = computed(() => route.params.chatId);
 
 const themeStore = useThemeStore();
@@ -231,7 +232,8 @@ watch(leftBarLoading, async () => {
 </script>
 <style lang="scss" scoped>
 a.router-link-active {
-  background-color: #E3E3E3; /* Màu nền tùy chỉnh */
+  background-color: #E3E3E3;
+  color: black!important;
 }
 
 .thread-link {
@@ -241,9 +243,8 @@ a.router-link-active {
   padding: 0.7em 1em;
   display: inline-flex;
   border-radius: 10px;
-
   &:hover {
-    background-color: #ececec;
+    background-color: #E3E3E3;
   }
 }
 
@@ -400,7 +401,7 @@ v-list-item-group {
 }
 
 .dark-sidebar {
-  background-color: #011e4d;
+      background-color: #212121;
 }
 
 .recent-threads-item.dark-sidebar:hover {
