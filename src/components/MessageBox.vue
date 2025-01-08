@@ -11,7 +11,7 @@
           <div v-if="message.role !== 'user'" class="ChatBot-name">
             <img :src="logoUrl" alt="Chatbot Logo" />
           </div>
-          <div :class="['message-content', { 'user-message': message.role === 'user', 'ChatBot-message': message.role !== 'user' }]">
+          <div :class="['message-content', sidebarClass, { 'user-message': message.role === 'user', 'ChatBot-message': message.role !== 'user' }]">
             <!-- Hiển thị tin nhắn user hoặc từng ký tự của chatbot -->
             <template v-if="message.role === 'user'">
               {{ message.content }}
@@ -33,6 +33,11 @@ import { computed, onMounted, watch, ref } from "vue";
 import { useRoute } from 'vue-router';
 import logoUrl from "@/assets/logoFii.png";
 import { useChatStore } from "@/stores/Chatstore";
+import { useThemeStore } from '../stores/useThemeStore'
+
+// Get trạng thái `isDarkMode` từ store
+const themeStore = useThemeStore();
+const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'));
 
 const route = useRoute();
 const chatStore = useChatStore();
@@ -141,6 +146,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.message-content.dark-sidebar.ChatBot-message, .message-content.dark-sidebar.user-message {
+    background-color: rgba(50,50,50,.85);
+    color: white;
+}
 .block-chats {
   margin-bottom: 10px;
 }

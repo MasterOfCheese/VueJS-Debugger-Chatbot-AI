@@ -136,7 +136,7 @@ const performSearch = () => {
           </div>
         </div> 
          <!-- Router-view ẩn khi ở URL "/" -->
-        <div class="router-view" :style="{ display: showRouterView ? 'block' : 'none' }">
+        <div class="router-view" :class="sidebarClass" :style="{ display: showRouterView ? 'block' : 'none' }">
           <router-view class="namdeptrai-view" />
         </div>
       </div>
@@ -185,7 +185,9 @@ const performSearch = () => {
   height: 100vh;
   overflow: hidden;
 }
-
+.router-view.dark-sidebar {
+    background-color: #212121;
+}
 .app-container {
   display: flex;
   flex-direction: column;
@@ -222,7 +224,7 @@ const performSearch = () => {
     height: 101%;
 }
 .dark-sidebar {
-    background-color: #011E4D;
+    background-color: #212121;
 }
 .toggle-dark-sidebar {
   background-color: rgb(59, 87, 87);
