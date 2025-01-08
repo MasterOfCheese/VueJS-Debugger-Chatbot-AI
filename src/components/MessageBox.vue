@@ -44,6 +44,7 @@ const messagesFromStore = computed(() => chatStore.messages);
 const chatId = computed(() => route.params.chatId);
 
 const displayedMessages = ref([]);
+const isHistory = ref(false); // Biến kiểm tra xem đang hiển thị lịch sử chat hay không
 
 // hiển thị từng ký tự (chỉ dành cho chatbot)
 const displayMessageCharacters = async (index, content) => {
@@ -71,15 +72,30 @@ const handleNewMessages = async () => {
     while (displayedMessages.value.length < messagesFromStore.value.length) {
       displayedMessages.value.push([]);
     }
+
     for (let index = 0; index < messagesFromStore.value.length; index++) {
       const message = messagesFromStore.value[index];
 
       // Nếu chưa hiển thị tin nhắn này
       if (!displayedMessages.value[index] || displayedMessages.value[index].length === 0) {
-        if (message.role !== "user") {
-          await displayMessageCharacters(index, message.content); // Hiển thị từng ký tự
-        } else {
-          displayedMessages.value[index] = [...message.content]; // Hiển thị toàn bộ
+        switch (message.role) {
+          case "user":
+            // Hiển thị toàn bộ cho user
+            displayedMessages.value[index] = [...message.content];
+            break;
+          case "assistant":
+            // Nếu không phải đoạn chat đã được tạo từ trc(đã được stored lại ở ChatStore) được truy cập thông qua ChatId, thì áp dụng hiệu ứng hiện từng ký tự
+            if (!isHistory.value) {
+              await displayMessageCharacters(index, message.content);
+            } else {
+              // Hiển thị toàn bộ đoạn chat(ko còn hiệu ứng gen từng ký tự) nếu đã được tạo từ trc(đã được stored lại ở ChatStore) được truy cập thông qua ChatId
+              displayedMessages.value[index] = [...message.content];
+            }
+            break;
+          default:
+            // Xử lý các trường hợp khác nếu có
+            console.warn("Unknown role:", message.role);
+            break;
         }
       }
     }
@@ -97,27 +113,29 @@ watch(messagesFromStore, () => {
 }, { immediate: true });
 
 // Lấy tin nhắn từ store khi chatId thay đổi
-const fetchMessages = async (chatId) => {
+const fetchMessOnMessageBox = async (chatId) => {
   try {
     displayedMessages.value = []; // Xóa trạng thái hiển thị cũ
+    isHistory.value = true; // Đánh dấu đang lấy dữ liệu lịch sử
     await chatStore.fetchMessages(chatId); // Gọi hàm fetchMessages trong store
+    isHistory.value = false; // Tắt chế độ lịch sử sau khi hoàn thành
   } catch (error) {
     console.error('Error fetching messages:', error);
   }
 };
 
-// Theo dõi sự thay đổi của chatId và gọi fetchMessages khi thay đổi
+// Theo dõi sự thay đổi của chatId và gọi fetchMessOnMessageBox khi thay đổi
 watch(chatId, async (newChatId) => {
   if (newChatId) {
     displayedMessages.value = []; // Xóa dữ liệu hiển thị cũ
-    await fetchMessages(newChatId); // Lấy tin nhắn mới
+    await fetchMessOnMessageBox(newChatId); // Lấy tin nhắn mới
   }
 });
 
-// Gọi fetchMessages khi component được mount lần đầu tiên
+// Gọi fetchMessOnMessageBox khi component được mount lần đầu tiên
 onMounted(() => {
   if (chatId.value) {
-    fetchMessages(chatId.value);
+    fetchMessOnMessageBox(chatId.value);
   }
 });
 </script>
