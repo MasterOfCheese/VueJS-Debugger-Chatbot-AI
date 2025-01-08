@@ -6,13 +6,21 @@
       <div :class="['block-chats', { 'user-chat': message.role === 'user', 'ChatBot-chat': message.role !== 'user' }]">
         <span v-if="message.role === 'user'" class="user-icon"></span>
         <img v-else class="ChatBot-icon" />
-        
+
         <div :class="['respond-bar', { 'user-respond': message.role === 'user', 'ChatBot-respond': message.role !== 'user' }]">
           <div v-if="message.role !== 'user'" class="ChatBot-name">
             <img :src="logoUrl" alt="Chatbot Logo" />
           </div>
           <div :class="['message-content', { 'user-message': message.role === 'user', 'ChatBot-message': message.role !== 'user' }]">
-            {{ message.content }}
+            <!-- Hiển thị tin nhắn user hoặc từng ký tự của chatbot -->
+            <template v-if="message.role === 'user'">
+              {{ message.content }}
+            </template>
+            <template v-else>
+              <span v-for="(char, charIndex) in displayedMessages[index]" :key="charIndex">
+                {{ char }}
+              </span>
+            </template>
           </div>
         </div>
       </div>
@@ -21,13 +29,11 @@
 </template>
 
 <script setup lang="js">
-import { computed, onMounted, watch } from "vue";
+import { computed, onMounted, watch, ref } from "vue";
 import { useRoute } from 'vue-router';
 import logoUrl from "@/assets/logoFii.png";
 import { useChatStore } from "@/stores/Chatstore";
 
-
-// Khai báo các biến cần thiết
 const route = useRoute();
 const chatStore = useChatStore();
 
@@ -37,26 +43,81 @@ const messagesFromStore = computed(() => chatStore.messages);
 // Lấy chatId từ URL
 const chatId = computed(() => route.params.chatId);
 
-// Hàm lấy dữ liệu tin nhắn từ store
+const displayedMessages = ref([]);
+
+// hiển thị từng ký tự (chỉ dành cho chatbot)
+const displayMessageCharacters = async (index, content) => {
+  try {
+    // Đảm bảo displayedMessages.value[index] là một mảng
+    if (!Array.isArray(displayedMessages.value[index])) {
+      displayedMessages.value[index] = [];
+    }
+
+    for (let i = 0; i < content.length; i++) {
+      if (Array.isArray(displayedMessages.value[index])) {
+        displayedMessages.value[index].push(content[i]); // push từng ký tự
+      }
+      await new Promise((resolve) => setTimeout(resolve, 0.1));
+    }
+  } catch (error) {
+    console.error("Error in displayMessageCharacters:", error);
+  }
+};
+
+// Cập nhật handleNewMessages để xử lý cả tin nhắn của user và chatbot
+const handleNewMessages = async () => {
+  try {
+    // Đồng bộ hóa độ dài của displayedMessages với messagesFromStore
+    while (displayedMessages.value.length < messagesFromStore.value.length) {
+      displayedMessages.value.push([]);
+    }
+    for (let index = 0; index < messagesFromStore.value.length; index++) {
+      const message = messagesFromStore.value[index];
+
+      // Nếu chưa hiển thị tin nhắn này
+      if (!displayedMessages.value[index] || displayedMessages.value[index].length === 0) {
+        if (message.role !== "user") {
+          await displayMessageCharacters(index, message.content); // Hiển thị từng ký tự
+        } else {
+          displayedMessages.value[index] = [...message.content]; // Hiển thị toàn bộ
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("Error handling new messages silently:", error.message);
+  }
+};
+
+watch(messagesFromStore, () => {
+  if (Array.isArray(messagesFromStore.value)) {
+    handleNewMessages();
+  } else {
+    console.error("messagesFromStore is not an array:", messagesFromStore.value);
+  }
+}, { immediate: true });
+
+// Lấy tin nhắn từ store khi chatId thay đổi
 const fetchMessages = async (chatId) => {
   try {
+    displayedMessages.value = []; // Xóa trạng thái hiển thị cũ
     await chatStore.fetchMessages(chatId); // Gọi hàm fetchMessages trong store
   } catch (error) {
     console.error('Error fetching messages:', error);
   }
 };
 
-// theo dõi sự thay đổi của chatId và gọi fetchMessages khi thay đổi
-watch(chatId, (newChatId) => {
+// Theo dõi sự thay đổi của chatId và gọi fetchMessages khi thay đổi
+watch(chatId, async (newChatId) => {
   if (newChatId) {
-    fetchMessages(newChatId); // Gọi hàm fetch khi chatId thay đổi
+    displayedMessages.value = []; // Xóa dữ liệu hiển thị cũ
+    await fetchMessages(newChatId); // Lấy tin nhắn mới
   }
 });
 
 // Gọi fetchMessages khi component được mount lần đầu tiên
 onMounted(() => {
   if (chatId.value) {
-    fetchMessages(chatId.value); // Gọi hàm fetch khi component được mount
+    fetchMessages(chatId.value);
   }
 });
 </script>
