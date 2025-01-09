@@ -40,7 +40,7 @@ onMounted(() => {
     position: absolute;
     width: max-content;
     bottom: 30%;
-    left: 55%;
+    left: 50%;
     transform: translateX(-50%);
     font-size: 20px;
     font-weight: 500;
