@@ -15,6 +15,7 @@ import MessMe from "./components/MessMe.vue"
 import ChatInput from "./components/ChatInput.vue"
 import { useSessionStore } from "./stores/SessionStore"
 import { useChatStore } from '@/stores/Chatstore'
+// import EChartsComponent from "./components/EChartsComponent.vue"
 
 // When I wrote this code, only I and God knew how it worked.
 // Now, only God knows it :D 
@@ -44,7 +45,7 @@ const handleSendMessage = async ({ content, role, chatId }) => {
   chatStore.messages.push({ content, role });
 
   try {
-    const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
+    const response = await fetch(`http://192.168.220.25:5000/api/v1/chats/messages/${chatId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,9 +127,11 @@ const performSearch = () => {
     <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
     <div class="app-container">
         <!-- ChatsContainer ẩn khi messageSent = true -->
-        <ChatsContainer v-if="messages.length === 0" class="chats-container" />
-        <!-- MessMe ẩn khi messageSent = true -->
-        <MessMe v-if="messages.length === 0" />
+        <ChatsContainer
+          v-if="!showRouterView && messages.length === 0"
+          class="chats-container"/>
+          <!-- MessMe ẩn khi messageSent = true -->
+        <MessMe v-if="messages.length === 0 && !showRouterView" />
         <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto; height: 87%;">
           <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
           <div v-for="(msg, index) in messages" :key="index" class="chat-bar" style="max-width: 770px; margin: 0 auto;">
@@ -138,6 +141,7 @@ const performSearch = () => {
          <!-- Router-view ẩn khi ở URL "/" -->
         <div class="router-view" :class="sidebarClass" :style="{ display: showRouterView ? 'block' : 'none' }">
           <router-view class="namdeptrai-view" />
+          <!-- <EChartsComponent/> -->
         </div>
       </div>
     <!-- Chat Input -->
@@ -185,6 +189,10 @@ const performSearch = () => {
   height: 100vh;
   overflow: hidden;
 }
+.router-view {
+  display: none;
+}
+
 .router-view.dark-sidebar {
     background-color: #212121;
 }
@@ -206,7 +214,7 @@ const performSearch = () => {
   max-width: 710px;
   min-width: 45%;
   /* background: aqua */
-  top: 5%;
+  top: 12%;
   left: 55%;
   transform: translateX(-50%);
   display: flex;
@@ -232,11 +240,11 @@ const performSearch = () => {
   color: #778eb4;
   }
   .router-view {
-    width: 110.5%;
+    width: 109.4%;
     overflow-y: scroll;
     position: relative;
     top: -17%;
-    height: 611%;
+    height: 520%;
     z-index: 3;
     background-color: #fff;
 }
