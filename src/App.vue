@@ -204,6 +204,7 @@ const performSearch = () => {
   margin: 0 auto;
   padding-bottom: 0;
   padding-top: 80px;
+  position: relative;
 }
 
 .chats-container {
@@ -215,7 +216,7 @@ const performSearch = () => {
   min-width: 45%;
   /* background: aqua */
   top: 12%;
-  left: 55%;
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
