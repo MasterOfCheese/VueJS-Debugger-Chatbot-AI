@@ -31,7 +31,7 @@
 <script setup lang="js">
 import { computed, onMounted, watch, ref } from "vue";
 import { useRoute } from 'vue-router';
-import logoUrl from "@/assets/logoFii.png";
+import logoUrl from "@/assets/logoFii_new.png";
 import { useChatStore } from "@/stores/Chatstore";
 import { useThemeStore } from '../stores/useThemeStore'
 
@@ -173,14 +173,25 @@ onMounted(() => {
 }
 
 .ChatBot-name img {
-  display: flex;
-  width: 23px;
-  height: 23px;
+    display: flex;
+    width: max-content;
+    height: 12px;
+}
+.ChatBot-name {
+    border: 1px solid #f1f1f1;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    transform: translateY(-35%);
 }
 
 .message-content {
   max-width: 60%;
-  padding: 8px 12px;
+  padding: 1% 2%;
   background-color: #f0f0f0;
   border-radius: 8px;
   word-wrap: break-word;

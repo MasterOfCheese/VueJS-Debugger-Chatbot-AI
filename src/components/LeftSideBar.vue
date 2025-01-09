@@ -41,7 +41,7 @@
               :to="`/chats/messages/${thread.id}`"
               @click.prevent="loadChat(thread.id)"
               class="thread-link"
-              :class="{ 'active-thread': currentChatId === thread.id }">
+              :class= "[{ 'active-thread': currentChatId === thread.id }, sidebarClass]">
               {{ thread.name }}
             </router-link>
             
@@ -66,8 +66,8 @@ const route = useRoute();
 const currentChatId = computed(() => route.params.chatId);
 
 const themeStore = useThemeStore();
-const chatStore = useChatStore();
 const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'));
+const chatStore = useChatStore();
 const threads = ref([]);
 const page = ref(1);
 // const limit = 30;
@@ -87,7 +87,7 @@ const fetchChats = async () => {
 
   try {
     const response = await fetch(
-      `http://172.20.10.4:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
+      `http://192.168.220.25:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
       {
         method: 'GET',
         headers: {
@@ -160,7 +160,7 @@ const loadChat = async (chatId) => {
   console.log("Đang tải tin nhắn cho chatId:", chatId);
   try {
     const response = await fetch(
-      `http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`,
+      `http://192.168.220.25:5000/api/v1/chats/messages/${chatId}/`,
       {
         method: 'GET',
         headers: {
@@ -199,7 +199,7 @@ watch(leftBarLoading, async () => {
         if (!thread.name) {
           try {
             // console.log('Fetching thread with ID:', thread.id);
-            const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/conversations/${thread.id}/`, {
+            const response = await fetch(`http://192.168.220.25:5000/api/v1/chats/conversations/${thread.id}/`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -233,9 +233,12 @@ watch(leftBarLoading, async () => {
 <style lang="scss" scoped>
 a.router-link-active {
   background-color: #E3E3E3;
-  color: black!important;
+  color: black;
 }
-
+a.router-link-active.dark-sidebar {
+    background-color: #4e4c4c!important;
+    color: white;
+}
 .thread-link {
   text-decoration: none;
   color: inherit;
@@ -247,7 +250,10 @@ a.router-link-active {
     background-color: #E3E3E3;
   }
 }
-
+.thread-link.dark-sidebar:hover {
+  background-color: #2F2F2F;
+  color: white;
+}
 .v-list-item__content {
   align-self: center;
   grid-area: auto !important;
@@ -268,11 +274,10 @@ a.router-link-active {
   background-color: #f9f9f9;
   padding-top: 1px;
   top: 8px;
-  // margin-top: 30px;
   position: sticky;
   z-index: 2;
-  height: 13%;
-
+  height: max-content;
+  margin-bottom: 1em;
   .new-thread {
     width: 90%;
     position: sticky;
@@ -307,7 +312,7 @@ a.router-link-active {
 }
 
 v-list-item-group {
-  left: 10px;
+  left: 5%;
   position: relative;
 }
 
@@ -364,7 +369,6 @@ v-list-item-group {
   width: 108%;
   overflow-y: scroll;
   height: 87%;
-
   .recent-threads-item {
     padding: 0.05em 1em;
     // border: 1px solid #7d7a7a;
@@ -404,7 +408,7 @@ v-list-item-group {
       background-color: #212121;
 }
 
-.recent-threads-item.dark-sidebar:hover {
-  color: black;
-}
+// .recent-threads-item.dark-sidebar:hover {
+//   color: black;
+// }
 </style>

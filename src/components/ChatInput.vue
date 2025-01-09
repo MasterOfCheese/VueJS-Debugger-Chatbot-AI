@@ -75,7 +75,7 @@ const sendChats = async () => {
     if (!chatId.value) {
       try {
         console.log('About to call create chat API...');
-        const createChatResponse = await fetch('http://172.20.10.4:5000/api/v1/chats/create', {
+        const createChatResponse = await fetch('http://192.168.220.25:5000/api/v1/chats/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -148,8 +148,8 @@ updateChatBoxPosition();
     display: flex;
     flex: 1;
     position: relative;
-    border: 2px solid #d1d1d1;
-    padding: 10px;
+    border: 2px solid #b0b0b0;
+    padding: 16px 10px;
     border-radius: 8px;
     background-color: #fff;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
