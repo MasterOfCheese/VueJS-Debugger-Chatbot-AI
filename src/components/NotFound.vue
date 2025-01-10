@@ -30,7 +30,6 @@
     background: linear-gradient(135deg, #ff7a18, #af002d);
     color: #fff;
     height: 100vh;
-    font-family: 'Arial', sans-serif;
     font-family: 'FontAwesome';
   }
   
@@ -77,5 +76,10 @@
       transform: translateY(0);
     }
   }
+  @media (min-width: 1280px) {
+    .v-container {
+        max-width: 100%;
+    }
+}
   </style>
   

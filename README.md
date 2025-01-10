@@ -57,5 +57,5 @@ The chat with darkmode:
 ![Layout5](./src/assets/Layout5.png)
 
 The 404 Not Found page:
-![Layout6](./src//assets/Layout06.png)
+![Layout6](./src/assets/Layout6.png)
 
