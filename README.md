@@ -5,9 +5,9 @@
 npm install
 ```
 
-### I also use router with npm, so you should install router from vue-router too. 
+### I use Vue Router, Pinia, Vuetify, @mdi/font, and socket.io-client, so make sure to install all these libraries via npm.
 ```
-npm install vue-router@latest
+npm install vue-router@latest pinia vuetify @mdi/font socket.io-client
 ```
 
 ### Compiles and hot-reloads for development
