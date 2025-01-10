@@ -15,6 +15,8 @@ import MessMe from "./components/MessMe.vue"
 import ChatInput from "./components/ChatInput.vue"
 import { useSessionStore } from "./stores/SessionStore"
 import { useChatStore } from '@/stores/Chatstore'
+import NotFound from "./components/NotFound.vue"
+
 // import EChartsComponent from "./components/EChartsComponent.vue"
 
 // When I wrote this code, only I and God knew how it worked.
@@ -33,6 +35,9 @@ const searchText = ref('')
 const route = useRoute();
 const sessionStore = useSessionStore();
 const chatStore = useChatStore();
+
+//định nghĩa biến isNotFound cho trang 404 not found
+const isNotFound = computed(() => route.name === 'NotFound');
 
 // Xác định xem router-view có hiển thị không
 const showRouterView = computed(() => route.path.startsWith('/chats'));
@@ -122,6 +127,7 @@ const performSearch = () => {
 
 <template>
   <div>
+    <div v-if="!isNotFound">
     <LoginPage v-if="!isAuthenticated" @login-success="onLoginSuccess" />
     <div v-else class="wrapper">
     <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
@@ -177,6 +183,11 @@ const performSearch = () => {
     <toggle-mode :class="toggleSidebarClass" />
     <UserOptions />
     <CopyrightBar/>
+    </div>
+  
+    </div>
+    <div v-else>
+      <NotFound/>
     </div>
   </div>
 </template>
