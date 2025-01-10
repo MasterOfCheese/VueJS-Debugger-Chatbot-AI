@@ -19,8 +19,12 @@ npm run serve
 
 ## You can create a new message by creating a new chat and then pasting that message into the newly created chat.
 
-## The interface of Chatbot can be look like below, any changes will be updated later 😊
+# If you reach this 404 page, it means the page you're looking for doesn't exist. You can easily return to the homepage by clicking the "Go to Home" button. The page design is modern and includes a smooth animation effect for a better user experience.
 
+## The interface of Chatbot can be look like below, any changes will be updated later 😊
+```
+
+```
 ## Technologies Used
 
 This project is built using modern web development technologies:
@@ -51,4 +55,7 @@ The homepage with darkmode:
 
 The chat with darkmode:
 ![Layout5](./src/assets/Layout5.png)
+
+The 404 Not Found page:
+![Layout6](./src//assets/Layout06.png)
 
