@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { config } from '../config'; // Import từ file config.js
+
 
 export const useChatStore = defineStore('chat', () => {
 
@@ -11,7 +13,7 @@ export const useChatStore = defineStore('chat', () => {
   // Fetch tin nhắn của một thread cụ thể
   const fetchMessages = async (chatId) => {
     try {
-      const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/v1/chats/messages/${chatId}/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +40,7 @@ export const useChatStore = defineStore('chat', () => {
   // Gửi tin nhắn mới
   const sendMessage = async (chatId, content) => {
     try {
-      const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
+      const response = await fetch(`${config.API_BASE_URL}/api/v1/chats/messages/${chatId}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

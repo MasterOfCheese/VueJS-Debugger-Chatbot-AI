@@ -6,8 +6,13 @@ import '@mdi/font/css/materialdesignicons.css'
 import router from './router'
 import { io } from 'socket.io-client'
 
-// Thay đổi URL của server (http://localhost:8000 nếu chạy cục bộ)
-const socket = io("http://172.20.10.4:5000");
+fetch('/config.json')
+.then(response => response.json())
+.then(data => {
+  const config = data; // Load cấu hình từ file config.json
+  
+// Sử dụng URL từ config
+const socket = io(config.API_BASE_URL);
 
 const app = createApp(App)
 
@@ -15,9 +20,16 @@ socket.on("response", (data) => {
     console.log("Server response:", data);
     console.log("Da ket noi")
   });
-  
+
+// Cung cấp config cho toàn bộ ứng dụng
+app.provide('config', config);
+
 app.use(router)
 app.use(vuetify)
 app.use(createPinia())
 
 app.mount('#app')
+})
+.catch(error => {
+  console.error('Failed to load config:', error);
+});

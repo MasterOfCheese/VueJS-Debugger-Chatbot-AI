@@ -16,13 +16,17 @@ import ChatInput from "./components/ChatInput.vue"
 import { useSessionStore } from "./stores/SessionStore"
 import { useChatStore } from '@/stores/Chatstore'
 import NotFound from "./components/NotFound.vue"
+import { inject } from "vue"
 
 // import EChartsComponent from "./components/EChartsComponent.vue"
 
 // When I wrote this code, only I and God knew how it worked.
 // Now, only God knows it :D 
 // Happy debugging! =^__^=!
- 
+
+// biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
+const config = inject('config');
+
 // State quản lý tin nhắn
 const isAuthenticated = ref(!!localStorage.getItem('token'))
 const router = useRouter()
@@ -50,7 +54,7 @@ const handleSendMessage = async ({ content, role, chatId }) => {
   chatStore.messages.push({ content, role });
 
   try {
-    const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
+    const response = await fetch(`${config.API_BASE_URL}/api/v1/chats/messages/${chatId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

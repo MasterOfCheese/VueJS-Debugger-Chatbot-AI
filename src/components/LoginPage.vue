@@ -21,6 +21,10 @@
 
 <script setup lang="js">
 import { defineEmits, ref } from 'vue';
+import { inject } from "vue"
+
+// biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
+const config = inject('config');
 
 const emit = defineEmits(['login-success']); 
 
@@ -38,7 +42,7 @@ const handleLogin = async () => {
 
     try {
       // Gửi request đến BE
-      const response = await fetch('http://172.20.10.4:5000/api/v1/auth/token', {
+      const response = await fetch(`${config.API_BASE_URL}/api/v1/auth/token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

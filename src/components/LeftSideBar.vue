@@ -60,6 +60,10 @@ import { useThemeStore } from '../stores/useThemeStore';
 import { useChatStore } from '../stores/Chatstore';
 import { storeToRefs } from "pinia";
 import { useRoute } from 'vue-router';
+import { inject } from "vue"
+
+// biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
+const config = inject('config');
 
 const route = useRoute();
 //currentChatId for css backgroundColor of router-link when active the thread
@@ -87,7 +91,7 @@ const fetchChats = async () => {
 
   try {
     const response = await fetch(
-      `http://172.20.10.4:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
+      `${config.API_BASE_URL}/api/v1/chats/conversations?last_id=${lastId.value}`,
       {
         method: 'GET',
         headers: {
@@ -160,7 +164,7 @@ const loadChat = async (chatId) => {
   console.log("Đang tải tin nhắn cho chatId:", chatId);
   try {
     const response = await fetch(
-      `http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`,
+      `${config.API_BASE_URL}/api/v1/chats/messages/${chatId}/`,
       {
         method: 'GET',
         headers: {
@@ -199,7 +203,7 @@ watch(leftBarLoading, async () => {
         if (!thread.name) {
           try {
             // console.log('Fetching thread with ID:', thread.id);
-            const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/conversations/${thread.id}/`, {
+            const response = await fetch(`${config.API_BASE_URL}/api/v1/chats/conversations/${thread.id}/`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',

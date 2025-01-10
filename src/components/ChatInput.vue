@@ -37,6 +37,10 @@ const emit = defineEmits(['sendMessage'])
 const route = useRoute(); // Lấy route hiện tại
 const router = useRouter();
 import { useThemeStore } from '../stores/useThemeStore'
+import { inject } from "vue"
+
+// biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
+const config = inject('config');
 
 // Get trạng thái `isDarkMode` từ store
 const themeStore = useThemeStore();
@@ -44,7 +48,7 @@ const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'l
 
 // Hàm kiểm tra đường dẫn
 const updateChatBoxPosition = () => {
-  if (route.path.startsWith('/chats/messages/')) {
+  if (route.path.startsWith(`${config.API_BASE_URL}/chats/messages/`)) {
     chatBoxBottom.value = '50px';
   }
 };
@@ -75,7 +79,7 @@ const sendChats = async () => {
     if (!chatId.value) {
       try {
         console.log('About to call create chat API...');
-        const createChatResponse = await fetch('http://172.20.10.4:5000/api/v1/chats/create', {
+        const createChatResponse = await fetch(`${config.API_BASE_URL}/api/v1/chats/create`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

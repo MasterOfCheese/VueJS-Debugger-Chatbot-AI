@@ -10,7 +10,10 @@
 <script>
 import * as echarts from "echarts";
 import { io } from "socket.io-client";
+import { inject } from "vue"
 
+// biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
+const config = inject('config');
 export default {
   data() {
     return {
@@ -20,7 +23,7 @@ export default {
   methods: {
     connectSocketIO() {
       // Tạo kết nối Socket.IO
-      this.socket = io("http://172.20.10.4:5000", {
+      this.socket = io(config.API_BASE_URL, {
         timeout: 60000,
         // path: "/api/v1/chats/ws", // Đường dẫn Socket.IO
       });
