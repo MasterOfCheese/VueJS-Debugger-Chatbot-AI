@@ -49,6 +49,6 @@ The Search bar:
 The homepage with darkmode:
 ![Layout4](./src/assets/Layout44.png)
 
-The basic with darkmode:
+The chat with darkmode:
 ![Layout5](./src/assets/Layout5.png)
 
