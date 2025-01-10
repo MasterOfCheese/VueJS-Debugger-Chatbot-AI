@@ -4,6 +4,8 @@ import App from '../App.vue';
 import LoginPage from '@/components/LoginPage.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import { useSessionStore } from '@/stores/SessionStore';
+import NotFound from '@/components/NotFound.vue';
+
 const routes = [
   {
     path: '/',
@@ -20,6 +22,12 @@ const routes = [
         component: LoginPage,
       },
     ],
+  },
+  // Thêm route 404
+  {
+    path: '/:pathMatch(.*)*', // Bắt tất cả các đường dẫn không hợp lệ
+    name: 'NotFound',
+    component: NotFound,
   },
 ];
 
