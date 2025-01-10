@@ -87,7 +87,7 @@ const fetchChats = async () => {
 
   try {
     const response = await fetch(
-      `http://192.168.220.25:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
+      `http://172.20.10.4:5000/api/v1/chats/conversations?last_id=${lastId.value}`,
       {
         method: 'GET',
         headers: {
@@ -160,7 +160,7 @@ const loadChat = async (chatId) => {
   console.log("Đang tải tin nhắn cho chatId:", chatId);
   try {
     const response = await fetch(
-      `http://192.168.220.25:5000/api/v1/chats/messages/${chatId}/`,
+      `http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`,
       {
         method: 'GET',
         headers: {
@@ -199,7 +199,7 @@ watch(leftBarLoading, async () => {
         if (!thread.name) {
           try {
             // console.log('Fetching thread with ID:', thread.id);
-            const response = await fetch(`http://192.168.220.25:5000/api/v1/chats/conversations/${thread.id}/`, {
+            const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/conversations/${thread.id}/`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',

@@ -45,7 +45,7 @@ const handleSendMessage = async ({ content, role, chatId }) => {
   chatStore.messages.push({ content, role });
 
   try {
-    const response = await fetch(`http://192.168.220.25:5000/api/v1/chats/messages/${chatId}/`, {
+    const response = await fetch(`http://172.20.10.4:5000/api/v1/chats/messages/${chatId}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

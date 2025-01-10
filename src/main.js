@@ -7,7 +7,7 @@ import router from './router'
 import { io } from 'socket.io-client'
 
 // Thay đổi URL của server (http://localhost:8000 nếu chạy cục bộ)
-const socket = io("http://192.168.220.25:5000");
+const socket = io("http://172.20.10.4:5000");
 
 const app = createApp(App)
 

@@ -75,7 +75,7 @@ const sendChats = async () => {
     if (!chatId.value) {
       try {
         console.log('About to call create chat API...');
-        const createChatResponse = await fetch('http://192.168.220.25:5000/api/v1/chats/create', {
+        const createChatResponse = await fetch('http://172.20.10.4:5000/api/v1/chats/create', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -20,7 +20,7 @@ export default {
   methods: {
     connectSocketIO() {
       // Tạo kết nối Socket.IO
-      this.socket = io("http://192.168.220.25:5000", {
+      this.socket = io("http://172.20.10.4:5000", {
         timeout: 60000,
         // path: "/api/v1/chats/ws", // Đường dẫn Socket.IO
       });
