@@ -22,9 +22,7 @@ npm run serve
 ## If you reach this 404 page, it means the page you're looking for doesn't exist. You can easily return to the homepage by clicking the "Go to Home" button. The page design is modern and includes a smooth animation effect for a better user experience.
 
 ## The interface of Chatbot can be look like below, any changes will be updated later 😊
-```
 
-```
 ## Technologies Used
 
 This project is built using modern web development technologies:
