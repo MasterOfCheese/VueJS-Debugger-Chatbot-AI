@@ -1,4 +1,4 @@
-# my-vue-app
+# CHATBOT AI DEBUG ASSISTANT
 
 ## Project setup
 ```
