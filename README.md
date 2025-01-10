@@ -19,7 +19,7 @@ npm run serve
 
 ## You can create a new message by creating a new chat and then pasting that message into the newly created chat.
 
-# If you reach this 404 page, it means the page you're looking for doesn't exist. You can easily return to the homepage by clicking the "Go to Home" button. The page design is modern and includes a smooth animation effect for a better user experience.
+## If you reach this 404 page, it means the page you're looking for doesn't exist. You can easily return to the homepage by clicking the "Go to Home" button. The page design is modern and includes a smooth animation effect for a better user experience.
 
 ## The interface of Chatbot can be look like below, any changes will be updated later 😊
 ```
