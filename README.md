@@ -57,3 +57,5 @@ The chat with darkmode:
 The 404 Not Found page:
 ![Layout6](./src/assets/Layout6.png)
 
+The Chart is built with socket.io:
+![Layout7](./src/assets//Layout7.png)
