@@ -22,6 +22,6 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-/public/config.json
+# /public/config.json
 
-/src/config.js
+# /src/config.js
