@@ -37,19 +37,16 @@
       </v-menu>
     </v-container>
   </template>
-<script>
-export default {
-  data() {
-    return {
-      currentUser: "user1", // Tạm thời hiển thị user1
-      userAvatar: null, // Gán URL ảnh nếu có, để trống thì hiện icon mặc định
-    };
-  },
-  methods: {
-    logout() {
-      alert("Logged out!"); // Thay alert bằng logic logout thực tế
-    },
-  },
+<script setup>
+import { ref } from 'vue';
+
+const currentUser = ref('user1');
+const userAvatar = ref(null);
+
+const logout = () => {
+  localStorage.removeItem("token");
+  alert('Đăng xuất thành công')
+  window.location.reload();
 };
 </script>
 <style scoped>

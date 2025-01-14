@@ -48,7 +48,7 @@ const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'l
 
 // Hàm kiểm tra đường dẫn
 const updateChatBoxPosition = () => {
-  if (route.path.startsWith(`${config.API_BASE_URL}/chats/messages/`)) {
+  if (route.path.startsWith(`/chats/messages/`)) {
     chatBoxBottom.value = '50px';
   }
 };
