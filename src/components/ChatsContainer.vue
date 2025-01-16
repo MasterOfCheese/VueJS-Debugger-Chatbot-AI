@@ -5,7 +5,7 @@
         {{ char === " " ? "\u00A0" : char }}
       </span>
     </div>
-    <div class="suggest" v-if="!messageSent">
+    <div class="suggest" v-if="!messageSent" :class="sidebarClass">
       <div class="suggest-area"><p id="suggest1">Regarding Technology Features</p></div>
       <div class="suggest-area"><p id="suggest2">Regarding Technology Features</p></div>
       <div class="suggest-area"><p id="suggest3">Regarding Technology Features</p></div>
@@ -67,12 +67,13 @@ onMounted(() => {
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.2s ease-in-out;
+    color: black;
 }
 p#suggest1:hover, p#suggest2:hover, p#suggest3:hover, p#suggest4:hover {
   background-color: #D2D2D2;
   color: darkgreen;
-  text-decoration: underline;
-  text-underline-offset: 2px;  
+  /* text-decoration: underline; */
+  /* text-underline-offset: 2px;   */
   transition: all 0.2s ease-in-out;
 }
 .suggest {

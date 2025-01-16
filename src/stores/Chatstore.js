@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { config } from '../config'; // Import từ file config.js
-
+import router from '@/router';
 
 export const useChatStore = defineStore('chat', () => {
 
@@ -23,6 +23,10 @@ export const useChatStore = defineStore('chat', () => {
       });
       // console.log('nếu log chạy được tới cái console log này nghĩa là đã fetch được toàn bộ cuộc trò chuyện bằng GET method rồi');
       if (!response.ok) {
+        if (response.status === 404) {
+          console.error(`Chat ID ${chatId} not found. Redirecting to home.`);
+          router.push('/'); // Điều hướng về trang chủ
+        }
         throw new Error('Failed to fetch messages');
       }
 

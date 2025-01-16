@@ -83,6 +83,7 @@ const handleLogin = async () => {
   font-family: 'Arial', sans-serif;
   scale: 1.4;
   border: 2px solid pink;
+  transform: translateY(-5px);
 }
 
 h2 {

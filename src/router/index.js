@@ -5,6 +5,7 @@ import LoginPage from '@/components/LoginPage.vue';
 import MessageBox from '@/components/MessageBox.vue';
 import { useSessionStore } from '@/stores/SessionStore';
 import NotFound from '@/components/NotFound.vue';
+import SignUp from '@/components/SignUp.vue';
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
         path: 'login',
         component: LoginPage,
       },
+      {
+        path: 'signUp',
+        name: 'SignUp',
+        component: SignUp,
+      }
     ],
   },
   // Thêm route 404

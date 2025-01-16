@@ -17,13 +17,15 @@ import { useSessionStore } from "./stores/SessionStore"
 import { useChatStore } from '@/stores/Chatstore'
 import NotFound from "./components/NotFound.vue"
 import { inject } from "vue"
+import SignUp from "./components/SignUp.vue"
 
 // import EChartsComponent from "./components/EChartsComponent.vue"
 
 // When I wrote this code, only I and God knew how it worked.
-// Now, only God knows it :D 
+// Now, only God knows it :D
 // Happy debugging! =^__^=!
 
+const tab = ref(null);
 // biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
 const config = inject('config');
 
@@ -132,66 +134,115 @@ const performSearch = () => {
 <template>
   <div>
     <div v-if="!isNotFound">
-    <LoginPage v-if="!isAuthenticated" @login-success="onLoginSuccess" />
-    <div v-else class="wrapper">
-    <LeftSideBar class="side-bar" @trigger-search="showSearchBar = true" :class="sidebarClass" />
-    <div class="app-container">
-        <!-- ChatsContainer ẩn khi messageSent = true -->
-        <ChatsContainer
-          v-if="!showRouterView && messages.length === 0"
-          class="chats-container"/>
-          <!-- MessMe ẩn khi messageSent = true -->
-        <MessMe v-if="messages.length === 0 && !showRouterView" />
-        <div class="chat-box" style="overflow-y: auto; width: 106.5%; margin: 0 auto; height: 87%;">
-          <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
-          <div v-for="(msg, index) in messages" :key="index" class="chat-bar" style="max-width: 770px; margin: 0 auto;">
-            <MessageBox :content="msg.content" :role="msg.role" />
-          </div>
-        </div> 
-         <!-- Router-view ẩn khi ở URL "/" -->
-        <div class="router-view" :class="sidebarClass" :style="{ display: showRouterView ? 'block' : 'none' }">
-          <router-view class="namdeptrai-view" />
-          <!-- <EChartsComponent/> -->
-        </div>
-      </div>
-    <!-- Chat Input -->
-    <ChatInput @sendMessage="handleSendMessage" />
-      <!-- vuetify Modal Search Bar -->
-      <v-dialog
-        v-model="showSearchBar"
-        persistent
-        max-width="500"
-        transition="dialog-transition"
-      >
-      <v-card>
-        <v-card-title>
-          <span class="headline">Search Chats...</span>
-        </v-card-title>
+      <v-card class="nam-card">
+        <v-tabs v-if="!isAuthenticated" v-model="tab" bg-color="primary">
+          <v-tab value="one">Login</v-tab>
+          <v-tab value="two">Sign Up</v-tab>
+        </v-tabs>
 
         <v-card-text>
-          <v-text-field
-            v-model="searchText"
-            label="Type your search"
-            append-icon="mdi-magnify"
-            @keyup.enter="performSearch"
-          />
-        </v-card-text>
+          <v-tabs-window v-if="!isAuthenticated" v-model="tab">
+            <v-tabs-window-item value="one">
+              <LoginPage
+                v-if="!isAuthenticated"
+                @login-success="onLoginSuccess"
+              />
+            </v-tabs-window-item>
 
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="showSearchBar = false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="performSearch">Search</v-btn>
-        </v-card-actions>
+            <v-tabs-window-item value="two">
+              <SignUp />
+            </v-tabs-window-item>
+          </v-tabs-window>
+
+          <div v-else class="wrapper">
+            <LeftSideBar
+              class="side-bar"
+              @trigger-search="showSearchBar = true"
+              :class="sidebarClass"
+            />
+            <div class="app-container">
+              <!-- ChatsContainer ẩn khi messageSent = true -->
+              <ChatsContainer
+                v-if="!showRouterView && messages.length === 0"
+                class="chats-container"
+              />
+              <!-- MessMe ẩn khi messageSent = true -->
+              <MessMe v-if="messages.length === 0 && !showRouterView" />
+              <div
+                class="chat-box"
+                style="
+                  overflow-y: auto;
+                  width: 106.5%;
+                  margin: 0 auto;
+                  height: 87%;
+                "
+              >
+                <!-- Hiển thị tất cả tin nhắn (cả user và assistant) -->
+                <div
+                  v-for="(msg, index) in messages"
+                  :key="index"
+                  class="chat-bar"
+                  style="max-width: 770px; margin: 0 auto"
+                >
+                  <MessageBox :content="msg.content" :role="msg.role" />
+                </div>
+              </div>
+              <!-- Router-view ẩn khi ở URL "/" -->
+              <div
+                class="router-view"
+                :class="sidebarClass"
+                :style="{ display: showRouterView ? 'block' : 'none' }"
+              >
+                <router-view class="namdeptrai-view" />
+                <!-- <EChartsComponent/> -->
+              </div>
+            </div>
+            <!-- Chat Input -->
+            <ChatInput @sendMessage="handleSendMessage" />
+            <!-- vuetify Modal Search Bar -->
+            <v-dialog
+              v-model="showSearchBar"
+              persistent
+              max-width="500"
+              transition="dialog-transition"
+            >
+              <v-card>
+                <v-card-title>
+                  <span class="headline">Search Chats...</span>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-text-field
+                    v-model="searchText"
+                    label="Type your search"
+                    append-icon="mdi-magnify"
+                    @keyup.enter="performSearch"
+                  />
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="showSearchBar = false"
+                    >Cancel</v-btn
+                  >
+                  <v-btn color="blue darken-1" text @click="performSearch"
+                    >Search</v-btn
+                  >
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <toggle-mode :class="toggleSidebarClass" />
+            <UserOptions />
+            <CopyrightBar />
+          </div>
+        </v-card-text>
       </v-card>
-    </v-dialog>
-    <toggle-mode :class="toggleSidebarClass" />
-    <UserOptions />
-    <CopyrightBar/>
-    </div>
-  
     </div>
     <div v-else>
-      <NotFound/>
+      <NotFound />
     </div>
   </div>
 </template>
@@ -200,7 +251,7 @@ const performSearch = () => {
 .wrapper {
   display: flex;
   justify-content: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   height: 100vh;
   overflow: hidden;
 }
@@ -209,7 +260,7 @@ const performSearch = () => {
 }
 
 .router-view.dark-sidebar {
-    background-color: #212121;
+  background-color: #212121;
 }
 .app-container {
   display: flex;
@@ -240,32 +291,56 @@ const performSearch = () => {
 }
 
 .side-bar {
-    min-width: 260px;
-    max-width: 260px;
-    background-color: #F9F9F9;
-    margin: -8px 0 0 -8px;
-    overflow: hidden;
-    height: 101%;
+  min-width: 260px;
+  max-width: 260px;
+  background-color: #f9f9f9;
+  margin: -8px 0 0 -8px;
+  overflow: hidden;
+  height: 101%;
 }
 .dark-sidebar {
-    background-color: #212121;
+  background-color: #212121;
 }
 .toggle-dark-sidebar {
   background-color: rgb(59, 87, 87);
-  box-shadow: 3.7px 7.4px 7.4px hsla(0, 8%, 91%, 0.39)!important;
+  box-shadow: 3.7px 7.4px 7.4px hsla(0, 8%, 91%, 0.39) !important;
   color: #778eb4;
-  }
-  .router-view {
-    width: 109.4%;
-    overflow-y: scroll;
-    position: relative;
-    top: -17%;
-    height: 520%;
-    z-index: 3;
-    background-color: #fff;
+}
+.router-view {
+  width: 109.4%;
+  overflow-y: scroll;
+  position: relative;
+  top: -17%;
+  height: 520%;
+  z-index: 3;
+  background-color: #fff;
 }
 .namdeptrai-view {
-    width: 70%;
-    margin: 0 auto;
+  width: 70%;
+  margin: 0 auto;
+}
+.v-tab.v-tab.v-btn {
+  width: 50% !important;
+  font-size: 17px;
+  color: #8b8a89;
+}
+.v-slide-group.v-tabs.v-tabs--horizontal.v-tabs--align-tabs-start.v-tabs--density-default.bg-primary {
+  max-width: 27% !important;
+  scale: 1.4;
+  z-index: 9;
+  position: relative;
+  top: 3em;
+  margin: 0 auto;
+  border-radius: 10px 10px 0 0;
+  border-bottom: none;
+}
+.v-window-item {
+  top: -4em;
+  position: relative;
+}
+.v-card-text {
+  font-size: medium !important;
+  letter-spacing: 0.0178571429em !important;
+  padding: 0 !important;
 }
 </style>
