@@ -18,12 +18,67 @@ import { useChatStore } from '@/stores/Chatstore'
 import NotFound from "./components/NotFound.vue"
 import { inject } from "vue"
 import SignUp from "./components/SignUp.vue"
+import { debounce } from "lodash"
 
 // import EChartsComponent from "./components/EChartsComponent.vue"
 
 // When I wrote this code, only I and God knew how it worked.
 // Now, only God knows it :D
 // Happy debugging! =^__^=!
+
+const searchResults = ref([]);
+const loading = ref(false);
+
+const fetchSearchResults = async (query) => {
+  if (!query) {
+    searchResults.value = [];
+    return;
+  }
+
+  loading.value = true;
+
+  try {
+    const params = new URLSearchParams({ keyword: query }).toString();
+
+    const response = await fetch(
+      `http://172.20.10.4:5000/api/v1/chats/search/conversations?${params}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      }
+    );
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch search results');
+    }
+
+    const data = await response.json();
+    searchResults.value = data || [];
+  } catch (error) {
+    searchResults.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+const onSearchInput = debounce(() => {
+  fetchSearchResults(searchText.value);
+}, 500);
+
+const navigateToChat = (chatId) => {
+  console.log("Navigating to chat:", chatId);
+
+  // Nếu dùng Vue Router
+  router.push(`/chats/messages/${chatId}`); // Đường dẫn tuỳ chỉnh cho đoạn chat
+
+  // Hoặc chuyển hướng thủ công nếu không dùng Vue Router
+  // window.location.href = `/chats/${chatId}`;
+};
+
 
 const tab = ref(null);
 // biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
@@ -122,13 +177,6 @@ onMounted(() => {
     })
 const sidebarClass = computed(() => (themeStore.isDarkMode ? 'dark-sidebar' : 'light-sidebar'))
 const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-sidebar' : 'toggle-light-sidebar'))
-
-// const messageStore = useMessageStore()
-
-const performSearch = () => {
-  console.log('Searching:', searchText.value)
-  alert(`You are searching for: ${searchText.value}`)
-}
 </script>
 
 <template>
@@ -204,20 +252,52 @@ const performSearch = () => {
               v-model="showSearchBar"
               persistent
               max-width="500"
-              transition="dialog-transition"
-            >
+              transition="dialog-transition">
               <v-card>
                 <v-card-title>
-                  <span class="headline">Search Chats...</span>
+                  <span class="headline">Search Chats</span>
                 </v-card-title>
 
                 <v-card-text>
                   <v-text-field
                     v-model="searchText"
                     label="Type your search"
-                    append-icon="mdi-magnify"
-                    @keyup.enter="performSearch"
+                    :loading="loading"
+                    clearable
+                    @input="onSearchInput"
                   />
+
+                  <v-divider class="my-4"></v-divider>
+                  <div v-if="loading" class="text-center">
+                    <v-progress-circular
+                      indeterminate
+                      color="blue"
+                    ></v-progress-circular>
+                  </div>
+                  <div v-else-if="searchResults.length > 0">
+                    <v-list>
+                      <v-list-item
+                        v-for="(result, index) in searchResults"
+                        :key="index"
+                        @click="navigateToChat(result.chat_id)"
+                        class="cursor-pointer"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{ result.chat_name }}</v-list-item-title>
+                          <v-list-item-subtitle v-if="result.messages.length > 0">
+                            Last message: {{ result.messages[0].content }}
+                          </v-list-item-subtitle>
+                          <v-list-item-subtitle v-else>
+                            No messages yet.
+                          </v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </div>
+                  <div
+                    v-else-if="searchText && searchResults.length === 0"
+                    class="text-center">No results found.
+                  </div>
                 </v-card-text>
 
                 <v-card-actions>
@@ -226,11 +306,9 @@ const performSearch = () => {
                     color="blue darken-1"
                     text
                     @click="showSearchBar = false"
-                    >Cancel</v-btn
                   >
-                  <v-btn color="blue darken-1" text @click="performSearch"
-                    >Search</v-btn
-                  >
+                    Close
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -342,5 +420,10 @@ const performSearch = () => {
   font-size: medium !important;
   letter-spacing: 0.0178571429em !important;
   padding: 0 !important;
+}
+.v-dialog > .v-overlay__content > .v-card, .v-dialog > .v-overlay__content > form > .v-card {
+  width: 35em;
+  border: 2px solid #997e1bc7;
+  border-radius: 12px;
 }
 </style>
