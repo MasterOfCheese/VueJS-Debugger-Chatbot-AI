@@ -26,59 +26,6 @@ import { debounce } from "lodash"
 // Now, only God knows it :D
 // Happy debugging! =^__^=!
 
-const searchResults = ref([]);
-const loading = ref(false);
-
-const fetchSearchResults = async (query) => {
-  if (!query) {
-    searchResults.value = [];
-    return;
-  }
-
-  loading.value = true;
-
-  try {
-    const params = new URLSearchParams({ keyword: query }).toString();
-
-    const response = await fetch(
-      `http://172.20.10.4:5000/api/v1/chats/search/conversations?${params}`,
-      {
-        method: 'GET',
-        headers: {
-          Authorization: 'Bearer ' + localStorage.getItem('token'),
-        },
-      }
-    );
-
-    console.log("Response status:", response.status);
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch search results');
-    }
-
-    const data = await response.json();
-    searchResults.value = data || [];
-  } catch (error) {
-    searchResults.value = [];
-  } finally {
-    loading.value = false;
-  }
-};
-
-const onSearchInput = debounce(() => {
-  fetchSearchResults(searchText.value);
-}, 500);
-
-const navigateToChat = (chatId) => {
-  console.log("Navigating to chat:", chatId);
-
-  // Nếu dùng Vue Router
-  router.push(`/chats/messages/${chatId}`); // Đường dẫn tuỳ chỉnh cho đoạn chat
-
-  // Hoặc chuyển hướng thủ công nếu không dùng Vue Router
-  // window.location.href = `/chats/${chatId}`;
-};
-
 
 const tab = ref(null);
 // biến config dc inject 'config' vào để làm url động thay đổi trong public/config.json:
@@ -96,6 +43,50 @@ const searchText = ref('')
 const route = useRoute();
 const sessionStore = useSessionStore();
 const chatStore = useChatStore();
+// for search funcion()
+const searchResults = ref([]);
+const loading = ref(false);
+
+const fetchSearchResults = async (query) => {
+  if (!query) {
+    searchResults.value = [];
+    return;
+  }
+
+  loading.value = true;
+  try {
+    const params = new URLSearchParams({ keyword: query }).toString();
+    const response = await fetch(
+     `${config.API_BASE_URL}/api/v1/chats/search/conversations?${params}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      }
+    );
+    // console.log("response status:", response.status);
+    if (!response.ok) {
+      throw new Error('Failed to fetch search results');
+    }
+
+    const data = await response.json();
+    searchResults.value = data || [];
+  } catch (error) {
+    searchResults.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+const onSearchInput = debounce(() => {
+  fetchSearchResults(searchText.value);
+}, 500);
+// router dieu huong user ve trang chứa chatId co ket qua trung voi ket qua tim kiem
+const navigateToChat = (chatId) => {
+  console.log("Navigating to chat:", chatId);
+  router.push(`/chats/messages/${chatId}`);
+};
 
 //định nghĩa biến isNotFound cho trang 404 not found
 const isNotFound = computed(() => route.name === 'NotFound');
@@ -123,9 +114,7 @@ const handleSendMessage = async ({ content, role, chatId }) => {
       }),
     });
 
-    if(response.ok) {
-      // window.location.reload()
-    } else {
+    if(!response.ok) {
       throw new Error('HTTP error! status: ' + response.status);
     }
   } catch (error) {
@@ -285,7 +274,7 @@ const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-
                         <v-list-item-content>
                           <v-list-item-title>{{ result.chat_name }}</v-list-item-title>
                           <v-list-item-subtitle v-if="result.messages.length > 0">
-                            Last message: {{ result.messages[0].content }}
+                            First message: <span class="result-content">"{{ result.messages[0].content }}"</span>
                           </v-list-item-subtitle>
                           <v-list-item-subtitle v-else>
                             No messages yet.
@@ -294,8 +283,7 @@ const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-
                       </v-list-item>
                     </v-list>
                   </div>
-                  <div
-                    v-else-if="searchText && searchResults.length === 0"
+                  <div v-else-if="searchText && searchResults.length === 0"
                     class="text-center">No results found.
                   </div>
                 </v-card-text>
@@ -426,4 +414,12 @@ const toggleSidebarClass = computed(() => (themeStore.isDarkMode ? 'toggle-dark-
   border: 2px solid #997e1bc7;
   border-radius: 12px;
 }
+span.result-content {
+    color: #fff;
+    font-style: italic;
+}
+.v-list-item-subtitle {
+    color: #b2adad;
+}
+
 </style>
